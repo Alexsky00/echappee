@@ -4,7 +4,9 @@
 // chargés qu'à l'ouverture d'un parcours (téléphone plus fluide).
 
 import { chargerJSON, echapper } from './outils.js';
-import { mesParcours, enregistrer, supprimer, creerParcours, gpxDe } from './mes-parcours.js';
+import {
+  mesParcours, enregistrer, supprimer, creerParcours, creerBoucle, creerAllerRetour, estimationAllerRetour, gpxDe,
+} from './mes-parcours.js';
 
 const DISTANCES = [
   { valeur: '',        texte: 'Distance',         min: 0,   max: 9999 },
@@ -103,7 +105,7 @@ function pointsGPX(texte) {
 
 export function init(section) {
   const etat = { donnees: null, reglages: null, cols: null, distance: '', difficulte: '', carte: null,
-    etapes: ['', '', ''], retour: true };
+    etapes: ['', '', ''], retour: true, boucle: { distance: 60, cap: null } };
   const $ = (sel) => section.querySelector(sel);
 
   // =========================================================== LISTE
@@ -291,15 +293,136 @@ export function init(section) {
   }
 
   // =========================================================== CRÉER
-  // L'utilisateur tape les villages ou cols par où passer ; l'app trace la boucle tout de suite.
+  // Trois façons de créer un parcours, de la plus simple à la plus libre :
+  //   1. « Une boucle » : on touche une distance et une direction, l'app invente la boucle ;
+  //   2. « Aller jusqu'à… » : on touche un but dans une liste, l'app trace l'aller-retour ;
+  //   3. « Mode avancé » : on tape soi-même les villages par où passer.
+  const villeDepart = () => etat.reglages?.ville ?? { nom: 'Vesoul', lat: 47.6227, lon: 6.1556 };
+
   function vueCreer() {
+    nettoyerCarte();
+    window.scrollTo(0, 0);
+    section.innerHTML = `
+      <button class="bouton retour">← Tous les parcours</button>
+      <h2 class="titre-parcours style-course">Créer mon parcours</h2>
+      <p>Départ de <b>${echapper(villeDepart().nom)}</b>. Que voulez-vous faire ?</p>
+      <div class="choix-creation">
+        <button class="choix-grand boucle">
+          <span class="choix-titre style-course">🔄 Une boucle</span>
+          <span>Choisissez la distance et la direction</span>
+        </button>
+        <button class="choix-grand destination">
+          <span class="choix-titre style-course">🎯 Aller jusqu'à…</span>
+          <span>Un village, un col, un lac</span>
+        </button>
+      </div>
+      <button class="bouton large avance">Mode avancé : taper les villages</button>`;
+    $('.retour').addEventListener('click', vueListe);
+    $('.boucle').addEventListener('click', vueBoucle);
+    $('.destination').addEventListener('click', vueDestination);
+    $('.avance').addEventListener('click', vueAvance);
+  }
+
+  // Lance un calcul de parcours en affichant où on en est ; ouvre l'aperçu à la fin.
+  async function lancer(calcul, retour, refaire) {
+    const message = $('.etat-creation');
+    const boutons = section.querySelectorAll('button');
+    if (!navigator.onLine) { message.textContent = 'Pas de connexion internet : impossible de tracer.'; return; }
+    boutons.forEach((b) => { b.disabled = true; });
+    try {
+      const p = await calcul((t) => { message.textContent = t; });
+      vueApercu(p, { retour, refaire });
+    } catch {
+      message.textContent = 'Le calcul n\'a pas abouti. Vérifiez la connexion et réessayez.';
+      boutons.forEach((b) => { b.disabled = false; });
+    }
+  }
+
+  // ---- 1. Une boucle : distance + direction
+  function vueBoucle() {
+    window.scrollTo(0, 0);
+    const b = etat.boucle;
+    const bouton = (classe, valeur, texte, choisi) =>
+      `<button type="button" class="pastille-choix ${classe}" data-v="${valeur}" aria-pressed="${choisi}">${texte}</button>`;
+    section.innerHTML = `
+      <button class="bouton retour">← Retour</button>
+      <h2 class="titre-parcours style-course">Une boucle</h2>
+
+      <h3 class="sous-titre style-course">Quelle distance ?</h3>
+      <div class="grille-choix">
+        ${[40, 60, 80, 100, 120, 150].map((km) => bouton('distance', km, `${km}<small> km</small>`, b.distance === km)).join('')}
+      </div>
+
+      <h3 class="sous-titre style-course">Vers où ?</h3>
+      <div class="boussole">
+        ${bouton('cap nord', 0, 'Nord', b.cap === 0)}
+        ${bouton('cap ouest', 270, 'Ouest', b.cap === 270)}
+        <span class="centre-boussole style-course">${echapper(villeDepart().nom)}</span>
+        ${bouton('cap est', 90, 'Est', b.cap === 90)}
+        ${bouton('cap sud', 180, 'Sud', b.cap === 180)}
+      </div>
+      <p class="discret">À l'est et au nord-est : les Vosges, ça grimpe. À l'ouest : la Saône, c'est plus plat.</p>
+
+      <button class="bouton large principal tracer">🚴 Tracer ma boucle</button>
+      <p class="etat-creation" role="status" aria-live="polite"></p>`;
+
+    $('.retour').addEventListener('click', vueCreer);
+    section.querySelectorAll('.pastille-choix').forEach((el) => el.addEventListener('click', () => {
+      const cle = el.classList.contains('distance') ? 'distance' : 'cap';
+      b[cle] = Number(el.dataset.v);
+      section.querySelectorAll(`.${cle}`).forEach((x) => x.setAttribute('aria-pressed', x === el));
+      $('.etat-creation').textContent = '';
+    }));
+    const tracerBoucle = () => lancer(
+      (progres) => creerBoucle({ ...b, ville: villeDepart(), cols: etat.cols }, progres), vueBoucle, tracerBoucle);
+    $('.tracer').addEventListener('click', () => {
+      if (b.cap === null) { $('.etat-creation').textContent = 'Touchez une direction : nord, est, sud ou ouest.'; return; }
+      tracerBoucle();
+    });
+  }
+
+  // ---- 2. Aller jusqu'à… : une liste de buts, du plus proche au plus loin
+  function vueDestination() {
+    window.scrollTo(0, 0);
+    const ville = villeDepart();
+    const buts = [
+      ...(etat.reglages?.destinations ?? []).map((d) => ({ ...d, type: 'ville' })),
+      ...(etat.cols?.points ?? []).map((d) => ({ nom: d.nom, lat: d.lat, lon: d.lon, type: d.type })),
+    ].map((d) => ({ ...d, km: estimationAllerRetour(ville, d) }))
+      .filter((d) => d.km >= 25)
+      .sort((a, c) => a.km - c.km);
+    section.innerHTML = `
+      <button class="bouton retour">← Retour</button>
+      <h2 class="titre-parcours style-course">Aller jusqu'à…</h2>
+      <p>Touchez votre but : l'aller et le retour passent par deux routes différentes.</p>
+      <p class="etat-creation" role="status" aria-live="polite"></p>
+      <ul class="liste liste-buts">${buts.map((d, i) => `
+        <li><button class="but" data-i="${i}">
+          <span class="but-nom">${d.type === 'col' ? '⛰️' : d.type === 'lieu' ? '📍' : '🏘️'} ${echapper(d.nom)}</span>
+          <span class="but-km style-course">≈ ${d.km} km</span>
+        </button></li>`).join('')}
+      </ul>`;
+    $('.retour').addEventListener('click', vueCreer);
+    $('.liste-buts').addEventListener('click', (e) => {
+      const el = e.target.closest('.but');
+      if (!el) return;
+      const destination = buts[Number(el.dataset.i)];
+      window.scrollTo(0, 0);
+      const tracerBut = () => lancer(
+        (progres) => creerAllerRetour({ destination, ville, cols: etat.cols }, progres), vueDestination, tracerBut);
+      tracerBut();
+    });
+  }
+
+  // ---- 3. Mode avancé : on tape les villages ou cols par où passer
+  function vueAvance() {
     nettoyerCarte();
     window.scrollTo(0, 0);
     const ville = etat.reglages?.ville ?? { nom: 'Vesoul', lat: 47.6227, lon: 6.1556 };
     const suggestions = (etat.cols?.points ?? []).map((r) => `<option value="${echapper(r.nom)}"></option>`).join('');
     section.innerHTML = `
-      <button class="bouton retour">← Tous les parcours</button>
-      <h2 class="titre-parcours style-course">Créer mon parcours</h2>
+      <button class="bouton retour">← Retour</button>
+      <h2 class="titre-parcours style-course">Mode avancé</h2>
       <p>Départ de <b>${echapper(ville.nom)}</b>. Indiquez les villages ou les cols par où passer,
         <b>dans l'ordre</b>. L'app trace la route tout de suite.</p>
       <form class="formulaire creation">
@@ -328,7 +451,7 @@ export function init(section) {
     const lireEtapes = () => { etat.etapes = [...zone.querySelectorAll('input')].map((x) => x.value); };
     dessinerEtapes();
 
-    $('.retour').addEventListener('click', vueListe);
+    $('.retour').addEventListener('click', vueCreer);
     $('.ajouter-etape').addEventListener('click', () => {
       lireEtapes();
       if (etat.etapes.length < 8) etat.etapes.push('');
@@ -356,7 +479,7 @@ export function init(section) {
       try {
         const p = await creerParcours({ etapes, retour: etat.retour, ville, cols: etat.cols },
           (t) => { message.textContent = t; });
-        vueApercu(p);
+        vueApercu(p, { retour: vueAvance });
       } catch (err) {
         message.textContent = err.lieu
           ? `Lieu « ${err.lieu} » introuvable. Vérifiez l'orthographe (avec les tirets, ex. « Saint-Loup-sur-Semouse »).`
@@ -367,10 +490,10 @@ export function init(section) {
   }
 
   // Aperçu du parcours tracé, avant de l'enregistrer
-  function vueApercu(p) {
+  function vueApercu(p, { retour, refaire } = {}) {
     window.scrollTo(0, 0);
     section.innerHTML = `
-      <button class="bouton retour">← Modifier les étapes</button>
+      <button class="bouton retour">← Changer</button>
       <h2 class="titre-parcours style-course">Votre parcours</h2>
 
       <div class="stats">
@@ -381,22 +504,26 @@ export function init(section) {
       </div>
       ${profilSVG(p)}
 
-      <h3 class="sous-titre style-course">Étapes trouvées</h3>
+      ${p.reperes.length ? `<p class="cols">⛰️ ${p.reperes.map((r) => echapper(r.nom)).join(' · ')}</p>` : ''}
+      ${refaire ? '<button class="bouton large refaire">🔁 Autre idée</button>' : ''}
+
+      ${p.etapes.length ? `<h3 class="sous-titre style-course">Étapes trouvées</h3>
       <ul class="reperes">${p.etapes.map((e, i) => `
         <li><span class="km style-course">${i === 0 ? 'Départ' : i === p.etapes.length - 1 && i > etat.etapes.filter((x) => x.trim()).length ? 'Arrivée' : i}</span>
           <span>${echapper(e.texte)} <span class="discret">→ ${echapper(e.trouve)}</span></span></li>`).join('')}
       </ul>
-      <p class="discret">Si une étape a été trouvée au mauvais endroit, revenez en arrière et précisez son nom.</p>
+      <p class="discret">Si une étape a été trouvée au mauvais endroit, revenez en arrière et précisez son nom.</p>` : ''}
 
       <form class="formulaire enregistrement">
         <label>Nom du parcours
           <input class="champ" name="nom" value="${echapper(p.nom)}" maxlength="80">
         </label>
         <button class="bouton large principal" type="submit">💾 Enregistrer dans mes parcours</button>
-        <p class="etat-creation" role="status"></p>
+        <p class="etat-creation" role="status" aria-live="polite"></p>
       </form>`;
 
-    $('.retour').addEventListener('click', vueCreer);
+    $('.retour').addEventListener('click', retour ?? vueCreer);
+    $('.refaire')?.addEventListener('click', refaire);
     $('.enregistrement').addEventListener('submit', (e) => {
       e.preventDefault();
       p.nom = e.target.nom.value.trim() || p.nom;

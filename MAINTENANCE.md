@@ -188,10 +188,17 @@ Ouvre le fichier `.gpx` sur GitHub, clique sur **⋯** (en haut à droite), puis
 
 ### Les parcours créés par ton père (dans l'app)
 
-Dans l'onglet Parcours, le bouton **« ➕ Créer mon parcours »** permet à ton père de taper
-les villages ou cols par où il veut passer. L'iPhone trace la boucle **tout de suite**
-(BRouter et OpenStreetMap, gratuits), affiche km, D+ et profil, et l'enregistre dans
-« Mes parcours ». Il peut ensuite l'envoyer à son GPS comme les autres.
+Dans l'onglet Parcours, le bouton **« ➕ Créer mon parcours »** propose trois façons de faire.
+L'iPhone trace tout de suite (BRouter et OpenStreetMap, gratuits), affiche km, D+ et profil,
+et le parcours s'enregistre dans « Mes parcours ». Il peut ensuite l'envoyer à son GPS.
+
+1. **🔄 Une boucle** : il touche une distance (40 à 150 km) et une direction (nord, est, sud,
+   ouest). L'app invente une boucle ; « 🔁 Autre idée » en propose une autre. Rien à taper.
+2. **🎯 Aller jusqu'à…** : il touche un but dans la liste (villes, cols, lieux). L'aller et le
+   retour passent par deux routes différentes. La liste = les `destinations` de
+   `donnees/reglages.json` + tous les cols et lieux de `donnees/cols.json`.
+   Pour ajouter une ville : nom + coordonnées dans `destinations`.
+3. **Mode avancé** : il tape les villages ou cols par où passer, dans l'ordre.
 
 - Rien à faire de ton côté : pas d'e-mail, pas de GitHub.
 - Ces parcours restent **dans son iPhone** (ils ne sont pas dans la bibliothèque commune).

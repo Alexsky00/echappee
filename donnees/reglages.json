@@ -1,8 +1,80 @@
 {
-  "_aide": "Réglages généraux de l'app. ville : lieu de la météo et point de départ des parcours (y compris ceux créés dans l'app).",
+  "_aide": "Réglages généraux de l'app. ville : lieu de la météo et point de départ des parcours. destinations : villes proposées dans « Créer mon parcours → Aller jusqu'à… » (les cols et lieux de cols.json y sont ajoutés automatiquement). Pour en ajouter une : nom + coordonnées (sur openstreetmap.org, clic droit → « Afficher l'adresse »).",
   "ville": {
     "nom": "Vesoul",
     "lat": 47.6227,
     "lon": 6.1556
-  }
+  },
+  "destinations": [
+    {
+      "nom": "Port-sur-Saône",
+      "lat": 47.68768,
+      "lon": 6.04545
+    },
+    {
+      "nom": "Rioz",
+      "lat": 47.42945,
+      "lon": 6.06448
+    },
+    {
+      "nom": "Villersexel",
+      "lat": 47.55064,
+      "lon": 6.43363
+    },
+    {
+      "nom": "Luxeuil-les-Bains",
+      "lat": 47.81718,
+      "lon": 6.38089
+    },
+    {
+      "nom": "Lure",
+      "lat": 47.68634,
+      "lon": 6.49468
+    },
+    {
+      "nom": "Faverney",
+      "lat": 47.76682,
+      "lon": 6.1048
+    },
+    {
+      "nom": "Ronchamp",
+      "lat": 47.7003,
+      "lon": 6.63287
+    },
+    {
+      "nom": "Faucogney-et-la-Mer",
+      "lat": 47.84407,
+      "lon": 6.56245
+    },
+    {
+      "nom": "Saint-Loup-sur-Semouse",
+      "lat": 47.88494,
+      "lon": 6.27314
+    },
+    {
+      "nom": "Gray",
+      "lat": 47.44556,
+      "lon": 5.59199
+    },
+    {
+      "nom": "Champlitte",
+      "lat": 47.61652,
+      "lon": 5.51344
+    },
+    {
+      "nom": "Fougerolles",
+      "lat": 47.89261,
+      "lon": 6.42273
+    },
+    {
+      "nom": "Belfort",
+      "lat": 47.63796,
+      "lon": 6.86289
+    },
+    {
+      "nom": "Besançon",
+      "lat": 47.23802,
+      "lon": 6.02436
+    }
+  ]
 }

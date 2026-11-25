@@ -181,8 +181,91 @@ async function tracer(etapes) {
   throw new Error('trace');
 }
 
+/** Assemble un parcours perso à partir d'un tracé déjà calculé. */
+function assembler(trace, cols, ville, infosEnPlus) {
+  return {
+    id: 'perso-' + Date.now(),
+    perso: true,
+    zone: 'Mon parcours',
+    description: '',
+    etapes: [],
+    ...analyser(trace, cols),
+    ...infosEnPlus,
+    depart: [ville.lat, ville.lon],
+    points: alleger(trace).map(([la, lo, al]) => [+la.toFixed(5), +lo.toFixed(5), Math.round(al)]),
+    cree_le: new Date().toISOString(),
+  };
+}
+
+/** Longueur d'un tracé en km. */
+function longueurKm(trace) {
+  let m = 0;
+  for (let i = 1; i < trace.length; i++) m += distanceM(trace[i - 1], trace[i]);
+  return m / 1000;
+}
+
+/** Point situé à « km » kilomètres du centre, dans la direction « cap » (0 = nord, 90 = est…). */
+function pointVers(centre, cap, km) {
+  const a = cap * Math.PI / 180;
+  return {
+    lat: centre.lat + (km / 111.2) * Math.cos(a),
+    lon: centre.lon + (km / (111.2 * Math.cos(centre.lat * Math.PI / 180))) * Math.sin(a),
+  };
+}
+
+export const DIRECTIONS = { 0: 'le nord', 90: "l'est", 180: 'le sud', 270: "l'ouest" };
+
 /**
- * Crée un parcours à partir d'une liste d'étapes (textes).
+ * Invente une boucle d'environ « distance » km vers une direction.
+ * Deux points de passage sont placés en éventail dans cette direction ; si la boucle
+ * obtenue est trop courte ou trop longue, on ajuste l'éventail et on recommence.
+ * Chaque appel donne une boucle un peu différente (bouton « Autre idée »).
+ */
+export async function creerBoucle({ distance, cap, ville, cols }, progres) {
+  const ecart = 28 + Math.random() * 20;            // ouverture de l'éventail (degrés)
+  const decalage = (Math.random() - 0.5) * 36;      // pour varier d'une fois sur l'autre
+  const sens = Math.random() < 0.5 ? 1 : -1;        // sens de rotation de la boucle
+  let rayon = distance / 4.1;                       // 4,1 : rapport habituel boucle / rayon sur route
+  let trace = null;
+  for (let essai = 0; essai < 3; essai++) {
+    progres(essai ? 'Ajustement de la distance…' : 'Calcul de la boucle sur les routes…');
+    const p1 = pointVers(ville, cap + decalage - sens * ecart, rayon);
+    const p2 = pointVers(ville, cap + decalage + sens * ecart, rayon);
+    trace = await tracer([ville, p1, p2, ville]);
+    const km = longueurKm(trace);
+    if (Math.abs(km - distance) / distance <= 0.12) break;
+    rayon *= distance / km;
+  }
+  const km = Math.round(longueurKm(trace));
+  return assembler(trace, cols, ville, { nom: `Boucle de ${km} km vers ${DIRECTIONS[cap]}` });
+}
+
+/**
+ * Aller-retour jusqu'à une destination, par une route à l'aller et une autre au retour
+ * (un point de passage de chaque côté de la ligne droite).
+ */
+export async function creerAllerRetour({ destination, ville, cols }, progres) {
+  const kmDroit = distanceM([ville.lat, ville.lon], [destination.lat, destination.lon]) / 1000;
+  const milieu = { lat: (ville.lat + destination.lat) / 2, lon: (ville.lon + destination.lon) / 2 };
+  const cap = Math.atan2(
+    (destination.lon - ville.lon) * Math.cos(ville.lat * Math.PI / 180),
+    destination.lat - ville.lat) * 180 / Math.PI;
+  const ecart = kmDroit * (0.15 + Math.random() * 0.12);
+  const sens = Math.random() < 0.5 ? 1 : -1;
+  const aller = pointVers(milieu, cap + 90 * sens, ecart);
+  const retour = pointVers(milieu, cap - 90 * sens, ecart);
+  progres(`Calcul de l'aller-retour à ${destination.nom}…`);
+  const trace = await tracer([ville, aller, destination, retour, ville]);
+  return assembler(trace, cols, ville, { nom: `Aller-retour à ${destination.nom}` });
+}
+
+/** Estimation rapide (sans calcul) de la longueur d'un aller-retour, pour la liste. */
+export function estimationAllerRetour(ville, destination) {
+  return Math.round(2.7 * distanceM([ville.lat, ville.lon], [destination.lat, destination.lon]) / 1000 / 5) * 5;
+}
+
+/**
+ * Mode avancé : crée un parcours qui passe par une liste d'étapes (textes).
  * progres(message) est appelé à chaque étape pour informer l'utilisateur.
  * En cas de lieu introuvable, l'erreur porte .lieu.
  */
@@ -199,19 +282,10 @@ export async function creerParcours({ etapes, retour, ville, cols }, progres) {
 
   progres('Calcul du tracé sur les routes…');
   const trace = await tracer(points);
-  const infos = analyser(trace, cols);
-  return {
-    id: 'perso-' + Date.now(),
-    perso: true,
+  return assembler(trace, cols, ville, {
     nom: `Par ${etapes.slice(0, 2).join(' et ')}${etapes.length > 2 ? '…' : ''}`,
-    zone: 'Mon parcours',
-    description: '',
     etapes: points.map((p) => ({ texte: p.texte, trouve: p.trouve })),
-    ...infos,
-    depart: [ville.lat, ville.lon],
-    points: alleger(trace).map(([la, lo, al]) => [+la.toFixed(5), +lo.toFixed(5), Math.round(al)]),
-    cree_le: new Date().toISOString(),
-  };
+  });
 }
 
 /** Fichier GPX d'un parcours perso (pour le GPS). */
