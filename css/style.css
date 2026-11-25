@@ -424,6 +424,11 @@ select.champ option { background: var(--nuit-2); color: var(--texte); }
 .carte { height: 380px; border-radius: 16px; overflow: hidden; border: 2px solid var(--bordure); }
 .leaflet-container { font-size: 14px; }
 .leaflet-tooltip { color: #111; }
+/* Bornes kilométriques sur la carte */
+.borne-km {
+  background: var(--nuit); color: var(--jaune); border: 2px solid var(--jaune); border-radius: 6px;
+  font: 900 italic 14px/18px var(--police-titre); text-align: center;
+}
 
 .formulaire { display: grid; gap: 14px; margin-top: 12px; }
 .formulaire label { display: grid; gap: 6px; font-weight: 700; }

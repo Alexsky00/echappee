@@ -263,11 +263,13 @@ export function init(section) {
     const zone = $('.zone-carte');
     zone.innerHTML = '<p class="vide">Chargement de la carte…</p>';
     try {
+      // Parcours perso : les points sont déjà là ; sinon on lit le fichier GPX
       const [, texte] = await Promise.all([
         chargerLeaflet(),
-        fichierGPX ? fichierGPX.texte : fetch(p.fichier).then((r) => r.text()),
+        p.points ? null : fichierGPX ? fichierGPX.texte : fetch(p.fichier).then((r) => r.text()),
       ]);
-      const points = pointsGPX(texte);
+      const points = p.points ? p.points.map(([la, lo]) => [la, lo]) : pointsGPX(texte);
+      nettoyerCarte();
       zone.innerHTML = '<div class="carte"></div>';
       const L = window.L;
       etat.carte = L.map(zone.firstChild, { preferCanvas: true, tap: false });
@@ -282,6 +284,16 @@ export function init(section) {
       const trace = L.polyline(allege, { color: '#FF2E88', weight: 5 }).addTo(etat.carte);
       L.circleMarker(points[0], { radius: 10, color: '#0B1530', weight: 3, fillColor: '#FFD100', fillOpacity: 1 })
         .bindTooltip('Départ', { permanent: true, direction: 'right' }).addTo(etat.carte);
+      // Bornes kilométriques tous les 10 km : on voit le sens et l'avancée de la boucle
+      let km = 0, prochaine = 10;
+      for (let i = 1; i < points.length; i++) {
+        km += window.L.latLng(points[i - 1]).distanceTo(points[i]) / 1000;
+        if (km >= prochaine) {
+          L.marker(points[i], { interactive: false, icon: L.divIcon({ className: 'borne-km', html: String(prochaine), iconSize: [30, 22] }) })
+            .addTo(etat.carte);
+          prochaine += 10;
+        }
+      }
       etat.carte.fitBounds(trace.getBounds(), { padding: [20, 20] });
     } catch {
       zone.innerHTML = '<p class="vide">Impossible d\'afficher la carte (pas de connexion ?).</p>';
@@ -491,6 +503,7 @@ export function init(section) {
 
   // Aperçu du parcours tracé, avant de l'enregistrer
   function vueApercu(p, { retour, refaire } = {}) {
+    nettoyerCarte();
     window.scrollTo(0, 0);
     section.innerHTML = `
       <button class="bouton retour">← Changer</button>
@@ -505,6 +518,10 @@ export function init(section) {
       ${profilSVG(p)}
 
       ${p.reperes.length ? `<p class="cols">⛰️ ${p.reperes.map((r) => echapper(r.nom)).join(' · ')}</p>` : ''}
+      <h3 class="sous-titre style-course">La route</h3>
+      <div class="zone-carte"></div>
+      <p class="discret">Les petits chiffres sont les kilomètres : ils montrent le sens de la boucle.
+        Pincez la carte avec deux doigts pour zoomer.</p>
       ${refaire ? '<button class="bouton large refaire">🔁 Autre idée</button>' : ''}
 
       ${p.etapes.length ? `<h3 class="sous-titre style-course">Étapes trouvées</h3>
@@ -524,6 +541,7 @@ export function init(section) {
 
     $('.retour').addEventListener('click', retour ?? vueCreer);
     $('.refaire')?.addEventListener('click', refaire);
+    afficherCarte(p);          // la carte s'affiche tout de suite, pour juger la route
     $('.enregistrement').addEventListener('submit', (e) => {
       e.preventDefault();
       p.nom = e.target.nom.value.trim() || p.nom;
