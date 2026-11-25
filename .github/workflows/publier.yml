@@ -30,10 +30,10 @@ jobs:
       url: ${{ steps.deploiement.outputs.page_url }}
     steps:
       - name: Récupérer les fichiers
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Installer Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           python-version: "3.12"
 
@@ -49,13 +49,13 @@ jobs:
         run: sed -i "s/const VERSION = 'dev'/const VERSION = '${GITHUB_SHA::8}'/" sw.js
 
       - name: Préparer le site
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v5
         with:
           path: .
 
       - name: Mettre en ligne
         id: deploiement
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
 
       # GitHub met en pause les tâches horaires d'un dépôt sans activité pendant 60 jours.
       # Une fois par semaine (le lundi), on « réactive » le robot pour éviter cette pause.
