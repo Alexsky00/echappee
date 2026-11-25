@@ -23,11 +23,9 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  # 1) Préparer le site (robot + fichiers)
   publier:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deploiement.outputs.page_url }}
     steps:
       - name: Récupérer les fichiers
         uses: actions/checkout@v7
@@ -53,10 +51,6 @@ jobs:
         with:
           path: .
 
-      - name: Mettre en ligne
-        id: deploiement
-        uses: actions/deploy-pages@v5
-
       # GitHub met en pause les tâches horaires d'un dépôt sans activité pendant 60 jours.
       # Une fois par semaine (le lundi), on « réactive » le robot pour éviter cette pause.
       - name: Rester actif (anti-pause des 60 jours)
@@ -67,3 +61,15 @@ jobs:
           if [ "$(date +%u)" = "1" ] && [ "$(date +%H)" = "06" ]; then
             gh api -X PUT "repos/${{ github.repository }}/actions/workflows/publier.yml/enable" && echo "Robot réactivé"
           fi
+
+  # 2) Mettre en ligne sur GitHub Pages (tâche séparée, comme le modèle officiel de GitHub)
+  mettre-en-ligne:
+    needs: publier
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploiement.outputs.page_url }}
+    steps:
+      - name: Mettre en ligne
+        id: deploiement
+        uses: actions/deploy-pages@v5
