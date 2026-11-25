@@ -2,39 +2,56 @@
 Fabrique les icônes et l'écran de démarrage d'Échappée (dossier icones/).
 À relancer seulement si on veut changer le dessin :  python outils/icones.py
 (il faut Pillow :  pip install pillow)
+
+Le logo : un « É » penché. Le E (trois barres) = le peloton ;
+l'accent qui part devant en biais, avec ses traits de vitesse = l'échappée.
 """
 import math
 from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont
 
-JAUNE, NUIT = (255, 209, 0), (19, 35, 63)
-VERT, ROUGE, BLANC = (0, 166, 81), (227, 6, 19), (255, 255, 255)
-DOSSIER = Path(__file__).resolve().parent.parent / "icones"
+JAUNE, NUIT, ROSE = (255, 209, 0), (11, 21, 48), (255, 46, 136)
+VERT, BLANC = (0, 184, 107), (244, 246, 250)
+RACINE = Path(__file__).resolve().parent.parent
+DOSSIER = RACINE / "icones"
 DOSSIER.mkdir(exist_ok=True)
+
+PENTE = math.tan(math.radians(12))     # inclinaison du logo (comme un coureur en danseuse)
 
 
 def dessin(taille, echelle=1.0):
-    """Roue de vélo + traits de vitesse sur fond jaune. echelle < 1 = marge (icône « maskable »)."""
-    G = 4 * taille                                   # on dessine en grand puis on réduit (bords lisses)
+    """Le logo sur fond jaune (carré : iOS arrondit les coins lui-même).
+    echelle < 1 = marge autour (icône « maskable » pour Android)."""
+    G = 4 * taille                         # on dessine en grand puis on réduit (bords lisses)
     img = Image.new("RGB", (G, G), JAUNE)
     d = ImageDraw.Draw(img)
-    u = G / 1024 * echelle
-    c = G / 2
-    cx, cy, r = c + 90 * u, c, 300 * u
-    # traits de vitesse (l'échappée !)
-    for dy, x0 in ((-130, -430), (0, -470), (130, -400)):
-        y = cy + dy * u
-        d.rounded_rectangle([c + x0 * u, y - 22 * u, c - 250 * u, y + 22 * u], radius=22 * u, fill=NUIT)
-    # rayons
-    for k in range(16):
-        a = 2 * math.pi * k / 16
-        d.line([(cx, cy), (cx + r * math.cos(a), cy + r * math.sin(a))], fill=NUIT, width=int(12 * u))
-    # jante et pneu
-    d.ellipse([cx - r, cy - r, cx + r, cy + r], outline=NUIT, width=int(62 * u))
-    d.ellipse([cx - r + 74 * u, cy - r + 74 * u, cx + r - 74 * u, cy + r - 74 * u], outline=NUIT, width=int(10 * u))
-    # moyeu
-    d.ellipse([cx - 58 * u, cy - 58 * u, cx + 58 * u, cy + 58 * u], fill=NUIT)
-    d.ellipse([cx - 22 * u, cy - 22 * u, cx + 22 * u, cy + 22 * u], fill=JAUNE)
+    u = G / 120 * echelle                  # le dessin est pensé sur une grille de 120
+    o = G / 2 - 60 * u                     # décalage pour centrer quand echelle < 1
+
+    def P(x, y):
+        """Point de la grille 120 → pixels, avec l'inclinaison et le recentrage."""
+        return (o + (x + 18 - PENTE * y) * u, o + y * u)
+
+    def rect(x, y, w, h, couleur, angle=0, centre=None):
+        coins = [(x, y), (x + w, y), (x + w, y + h), (x, y + h)]
+        if angle:
+            cx, cy = centre
+            a = math.radians(angle)
+            coins = [(cx + (px - cx) * math.cos(a) - (py - cy) * math.sin(a),
+                      cy + (px - cx) * math.sin(a) + (py - cy) * math.cos(a)) for px, py in coins]
+        d.polygon([P(px, py) for px, py in coins], fill=couleur)
+
+    # Le E : une barre verticale et trois barres horizontales
+    rect(30, 44, 14, 52, NUIT)
+    rect(30, 44, 50, 12, NUIT)
+    rect(30, 64, 38, 12, NUIT)
+    rect(30, 84, 50, 12, NUIT)
+    # L'accent qui s'échappe, et ses traits de vitesse (plus pâles)
+    pale = tuple(int(c * .7 + j * .3) for c, j in zip(ROSE, JAUNE))
+    tres_pale = tuple(int(c * .45 + j * .55) for c, j in zip(ROSE, JAUNE))
+    rect(52, 22, 34, 11, ROSE, -18, (67, 27))
+    rect(34, 22, 12, 4, pale, -18, (67, 27))
+    rect(38, 29, 8, 4, tres_pale, -18, (67, 27))
     return img.resize((taille, taille), Image.LANCZOS)
 
 
@@ -49,23 +66,18 @@ ecran = Image.new("RGB", (L, H), NUIT)
 icone = dessin(300)
 masque = Image.new("L", (300, 300), 0)
 ImageDraw.Draw(masque).rounded_rectangle([0, 0, 299, 299], radius=66, fill=255)
-ecran.paste(icone, ((L - 300) // 2, 640), masque)
+ecran.paste(icone, ((L - 300) // 2, 600), masque)
 d = ImageDraw.Draw(ecran)
+police_fichier = RACINE / "outils" / "BarlowCondensed-BlackItalic.ttf"
 try:
-    police = ImageFont.truetype("C:/Windows/Fonts/arialbi.ttf", 92)
+    police = ImageFont.truetype(str(police_fichier), 150)
 except OSError:
-    police = ImageFont.truetype("DejaVuSans-BoldOblique.ttf", 92)
+    police = ImageFont.truetype("C:/Windows/Fonts/arialbi.ttf", 100)
 texte = "ÉCHAPPÉE"
 largeur = d.textlength(texte, font=police)
-d.text(((L - largeur) / 2, 990), texte, font=police, fill=JAUNE)
-# bande des maillots sous le nom
-x0, y0, w = (L - 420) // 2, 1115, 420
-d.rectangle([x0, y0, x0 + w * .4, y0 + 12], fill=JAUNE)
-d.rectangle([x0 + w * .4, y0, x0 + w * .6, y0 + 12], fill=VERT)
-d.rectangle([x0 + w * .6, y0, x0 + w * .8, y0 + 12], fill=BLANC)
-for i in range(6):
-    px = x0 + w * .6 + 7 + i * 14
-    d.ellipse([px - 4, y0 + 2, px + 4, y0 + 10], fill=ROUGE)
-d.rectangle([x0 + w * .8, y0, x0 + w, y0 + 12], fill=BLANC)
+d.text(((L - largeur) / 2, 950), texte, font=police, fill=BLANC)
+# bande des 4 maillots tout en bas
+for i, c in enumerate((JAUNE, VERT, ROSE, BLANC)):
+    d.rectangle([i * L / 4, H - 28, (i + 1) * L / 4, H], fill=c)
 ecran.save(DOSSIER / "demarrage-828x1792.png", optimize=True)
 print("Icônes créées dans", DOSSIER)

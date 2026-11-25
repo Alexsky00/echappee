@@ -4,6 +4,7 @@
 // chargés qu'à l'ouverture d'un parcours (téléphone plus fluide).
 
 import { chargerJSON, echapper } from './outils.js';
+import { mesParcours, enregistrer, supprimer, creerParcours, gpxDe } from './mes-parcours.js';
 
 const DISTANCES = [
   { valeur: '',        texte: 'Distance',         min: 0,   max: 9999 },
@@ -16,10 +17,11 @@ const DIFFICULTES = { facile: 'Facile', moyen: 'Moyen', difficile: 'Difficile' }
 
 // Couleurs des pentes, comme sur les profils des étapes du Tour
 function couleurPente(pourcent) {
-  if (pourcent < 3) return '#7BC67B';
+  if (pourcent < -3) return '#2A3A62';    // vraie descente
+  if (pourcent < 3) return '#3FA968';
   if (pourcent < 6) return '#FFD100';
-  if (pourcent < 9) return '#F28C28';
-  return '#D7263D';
+  if (pourcent < 9) return '#FF8A1F';
+  return '#FF2E88';
 }
 
 /** Profil altimétrique en SVG. mini = petite version pour la liste. */
@@ -39,13 +41,13 @@ function profilSVG(p, mini = false) {
   let svg = `<svg class="profil${mini ? ' mini' : ''}" viewBox="0 0 ${L} ${H}" preserveAspectRatio="none" aria-hidden="true">`;
   if (mini) {
     const ligne = pts.map(([km, alt]) => `${X(km).toFixed(1)},${Y(alt).toFixed(1)}`).join(' ');
-    svg += `<polygon points="${X(0)},${sol} ${ligne} ${X(kmMax)},${sol}" fill="#13233F"/>`;
+    svg += `<polygon points="${X(0)},${sol} ${ligne} ${X(kmMax)},${sol}" fill="#22345E"/>`;
     svg += `<polyline points="${ligne}" fill="none" stroke="#FFD100" stroke-width="2.5" vector-effect="non-scaling-stroke"/>`;
     return svg + '</svg>';
   }
   // Lignes d'altitude
   for (let a = bas; a <= haut; a += (haut - bas > 600 ? 200 : 100)) {
-    svg += `<line x1="${marge.g}" x2="${L - marge.d}" y1="${Y(a)}" y2="${Y(a)}" stroke="#D5DAE1" stroke-width="1"/>`;
+    svg += `<line x1="${marge.g}" x2="${L - marge.d}" y1="${Y(a)}" y2="${Y(a)}" stroke="#2A3A62" stroke-width="1"/>`;
     svg += `<text x="${marge.g - 4}" y="${Y(a) + 4}" text-anchor="end" class="axe">${a}</text>`;
   }
   // Une bande colorée par tronçon, selon la pente
@@ -54,7 +56,7 @@ function profilSVG(p, mini = false) {
     const pente = k2 > k1 ? ((a2 - a1) / ((k2 - k1) * 1000)) * 100 : 0;
     svg += `<polygon points="${X(k1).toFixed(1)},${sol} ${X(k1).toFixed(1)},${Y(a1).toFixed(1)} ${X(k2).toFixed(1)},${Y(a2).toFixed(1)} ${X(k2).toFixed(1)},${sol}" fill="${couleurPente(pente)}" stroke="${couleurPente(pente)}" stroke-width=".6"/>`;
   }
-  svg += `<polyline points="${pts.map(([k, a]) => `${X(k).toFixed(1)},${Y(a).toFixed(1)}`).join(' ')}" fill="none" stroke="#13233F" stroke-width="2"/>`;
+  svg += `<polyline points="${pts.map(([k, a]) => `${X(k).toFixed(1)},${Y(a).toFixed(1)}`).join(' ')}" fill="none" stroke="#F4F6FA" stroke-width="2"/>`;
   // Kilomètres
   for (const km of [0, Math.round(kmMax / 2), Math.round(kmMax)]) {
     svg += `<text x="${X(km)}" y="${H - 5}" text-anchor="${km === 0 ? 'start' : km >= kmMax - 1 ? 'end' : 'middle'}" class="axe">${km} km</text>`;
@@ -66,7 +68,7 @@ function profilSVG(p, mini = false) {
     const x = X(c.km), y = Y(point[1]);
     const ancre = x > L * 0.7 ? 'end' : x < L * 0.3 ? 'start' : 'middle';
     const yTexte = 13 + (i % 2) * 14;
-    svg += `<line x1="${x}" x2="${x}" y1="${y}" y2="${yTexte + 3}" stroke="#13233F" stroke-width="1" stroke-dasharray="2 2"/>`;
+    svg += `<line x1="${x}" x2="${x}" y1="${y}" y2="${yTexte + 3}" stroke="#FFD100" stroke-width="1.5" stroke-dasharray="3 2"/>`;
     svg += `<text x="${x}" y="${yTexte}" text-anchor="${ancre}" class="col">${echapper(c.nom)} ${c.alt ? c.alt + ' m' : ''}</text>`;
   });
   return svg + '</svg>';
@@ -100,7 +102,8 @@ function pointsGPX(texte) {
 }
 
 export function init(section) {
-  const etat = { donnees: null, reglages: null, distance: '', difficulte: '', carte: null };
+  const etat = { donnees: null, reglages: null, cols: null, distance: '', difficulte: '', carte: null,
+    etapes: ['', '', ''], retour: true };
   const $ = (sel) => section.querySelector(sel);
 
   // =========================================================== LISTE
@@ -118,14 +121,14 @@ export function init(section) {
           </select>
         </div>
       </div>
+      <button class="bouton large principal creer">➕ Créer mon parcours</button>
       <ul class="liste liste-parcours"></ul>
-      <button class="bouton large principal demander" style="margin-top:16px">✉️ Demander un nouveau parcours</button>
       <p class="info">Tous les parcours partent du centre de Vesoul. Ils sont calculés automatiquement
         sur de vraies routes : jetez un œil à la carte avant de partir (travaux, route fermée…).</p>`;
 
     $('.choix-distance').addEventListener('change', (e) => { etat.distance = e.target.value; remplirListe(); });
     $('.choix-difficulte').addEventListener('change', (e) => { etat.difficulte = e.target.value; remplirListe(); });
-    $('.demander').addEventListener('click', vueDemande);
+    $('.creer').addEventListener('click', vueCreer);
     $('.liste-parcours').addEventListener('click', (e) => {
       const li = e.target.closest('[data-id]');
       if (li) vueDetail(li.dataset.id);
@@ -133,16 +136,29 @@ export function init(section) {
     remplirListe();
   }
 
+  /** Tous les parcours : les miens d'abord, puis la bibliothèque. */
+  function tousLesParcours() {
+    return [...mesParcours(), ...(etat.donnees?.parcours ?? [])];
+  }
+
   function remplirListe() {
     const liste = $('.liste-parcours');
-    if (!etat.donnees) {
-      liste.innerHTML = '<li class="vide">Pas de connexion : impossible de charger les parcours.</li>';
-      return;
-    }
     const d = DISTANCES.find((x) => x.valeur === etat.distance);
-    const parcours = etat.donnees.parcours.filter((p) =>
-      p.distance >= d.min && p.distance < d.max && (!etat.difficulte || p.difficulte === etat.difficulte));
-    liste.innerHTML = parcours.length ? parcours.map((p) => `
+    const filtre = (p) =>
+      p.distance >= d.min && p.distance < d.max && (!etat.difficulte || p.difficulte === etat.difficulte);
+    const miens = mesParcours().filter(filtre);
+    const biblio = (etat.donnees?.parcours ?? []).filter(filtre);
+    const titre = (t) => `<li class="titre-groupe style-course">${t}</li>`;
+    let html = '';
+    if (miens.length) html += titre('Mes parcours') + miens.map(carte).join('');
+    if (biblio.length) html += (miens.length ? titre('Bibliothèque') : '') + biblio.map(carte).join('');
+    if (!etat.donnees) html += '<li class="vide">Pas de connexion : impossible de charger la bibliothèque.</li>';
+    else if (!html) html = '<li class="vide">Aucun parcours ne correspond à ces filtres.</li>';
+    liste.innerHTML = html;
+  }
+
+  function carte(p) {
+    return `
       <li class="parcours" data-id="${echapper(p.id)}" role="button" tabindex="0">
         <div class="parcours-haut">
           <h3 class="style-course">${echapper(p.nom)}</h3>
@@ -156,17 +172,21 @@ export function init(section) {
         </div>
         ${profilSVG(p, true)}
         ${p.reperes.some((r) => r.type === 'col') ? `<div class="cols">⛰️ ${p.reperes.filter((r) => r.type === 'col').map((r) => echapper(r.nom)).join(' · ')}</div>` : ''}
-      </li>`).join('') : '<li class="vide">Aucun parcours ne correspond à ces filtres.</li>';
+      </li>`;
   }
 
   // =========================================================== DÉTAIL
   let fichierGPX = null;   // le GPX, préchargé pour que « Envoyer » réagisse tout de suite
 
   function vueDetail(id) {
-    const p = etat.donnees.parcours.find((x) => x.id === id);
+    const p = tousLesParcours().find((x) => x.id === id);
     if (!p) return vueListe();
     window.scrollTo(0, 0);
     fichierGPX = null;
+    // Parcours perso : le GPX est fabriqué sur place ; sinon il est sur le site
+    const lienGPX = p.perso
+      ? URL.createObjectURL(new Blob([gpxDe(p)], { type: 'application/gpx+xml' }))
+      : p.fichier;
     section.innerHTML = `
       <button class="bouton retour">← Tous les parcours</button>
       <h2 class="titre-parcours style-course">${echapper(p.nom)}</h2>
@@ -183,13 +203,14 @@ export function init(section) {
       <h3 class="sous-titre style-course">Profil</h3>
       ${profilSVG(p)}
       <div class="legende-pentes">
-        <span><i style="background:#7BC67B"></i>&lt; 3 %</span><span><i style="background:#FFD100"></i>3-6 %</span>
-        <span><i style="background:#F28C28"></i>6-9 %</span><span><i style="background:#D7263D"></i>&gt; 9 %</span>
+        <span><i style="background:#3FA968"></i>&lt; 3 %</span><span><i style="background:#FFD100"></i>3-6 %</span>
+        <span><i style="background:#FF8A1F"></i>6-9 %</span><span><i style="background:#FF2E88"></i>&gt; 9 %</span>
+        <span><i style="background:#2A3A62;outline:1px solid #4A5B82"></i>descente</span>
       </div>
 
       <div class="actions-parcours">
         <button class="bouton large principal envoyer">📲 Envoyer vers mon GPS</button>
-        <a class="bouton large" href="${echapper(p.fichier)}" download="${echapper(p.id)}.gpx">⬇️ Télécharger le fichier GPX</a>
+        <a class="bouton large" href="${echapper(lienGPX)}" download="${echapper(p.id)}.gpx">⬇️ Télécharger le fichier GPX</a>
         <p class="discret">« Envoyer » ouvre le menu de partage de l'iPhone : choisissez
           <b>Garmin Connect</b>, <b>Wahoo</b> ou <b>Enregistrer dans Fichiers</b>.</p>
       </div>
@@ -201,16 +222,23 @@ export function init(section) {
       </ul>` : ''}
 
       <h3 class="sous-titre style-course">Carte</h3>
-      <div class="zone-carte"><button class="bouton large voir-carte">🗺️ Afficher la carte</button></div>`;
+      <div class="zone-carte"><button class="bouton large voir-carte">🗺️ Afficher la carte</button></div>
+      ${p.perso ? '<button class="bouton large supprimer">🗑️ Supprimer ce parcours</button>' : ''}`;
 
     $('.retour').addEventListener('click', vueListe);
     $('.voir-carte').addEventListener('click', () => afficherCarte(p));
     $('.envoyer').addEventListener('click', () => envoyer(p));
+    $('.supprimer')?.addEventListener('click', () => {
+      if (confirm(`Supprimer « ${p.nom} » de vos parcours ?`)) { supprimer(p.id); vueListe(); }
+    });
 
     // Préchargement du GPX (Safari exige que le partage parte directement du toucher)
-    fetch(p.fichier).then((r) => r.text()).then((texte) => {
-      fichierGPX = { texte, file: new File([texte], `${p.id}.gpx`, { type: 'application/gpx+xml' }) };
-    }).catch(() => {});
+    const nomFichier = `${p.id}.gpx`;
+    const prendre = (texte) => {
+      fichierGPX = { texte, file: new File([texte], nomFichier, { type: 'application/gpx+xml' }) };
+    };
+    if (p.perso) prendre(gpxDe(p));
+    else fetch(p.fichier).then((r) => r.text()).then(prendre).catch(() => {});
   }
 
   async function envoyer(p) {
@@ -247,8 +275,8 @@ export function init(section) {
       // Un point sur deux suffit à l'écran (plus léger)
       const allege = points.filter((_, i) => i % 2 === 0 || i === points.length - 1);
       L.polyline(allege, { color: '#fff', weight: 8, opacity: 0.9 }).addTo(etat.carte);
-      const trace = L.polyline(allege, { color: '#E5007E', weight: 5 }).addTo(etat.carte);
-      L.circleMarker(points[0], { radius: 10, color: '#13233F', weight: 3, fillColor: '#FFD100', fillOpacity: 1 })
+      const trace = L.polyline(allege, { color: '#FF2E88', weight: 5 }).addTo(etat.carte);
+      L.circleMarker(points[0], { radius: 10, color: '#0B1530', weight: 3, fillColor: '#FFD100', fillOpacity: 1 })
         .bindTooltip('Départ', { permanent: true, direction: 'right' }).addTo(etat.carte);
       etat.carte.fitBounds(trace.getBounds(), { padding: [20, 20] });
     } catch {
@@ -260,63 +288,133 @@ export function init(section) {
     if (etat.carte) { etat.carte.remove(); etat.carte = null; }
   }
 
-  // =========================================================== DEMANDE
-  function vueDemande() {
+  // =========================================================== CRÉER
+  // L'utilisateur tape les villages ou cols par où passer ; l'app trace la boucle tout de suite.
+  function vueCreer() {
+    nettoyerCarte();
     window.scrollTo(0, 0);
-    const zones = etat.reglages?.zones ?? [];
+    const ville = etat.reglages?.ville ?? { nom: 'Vesoul', lat: 47.6227, lon: 6.1556 };
+    const suggestions = (etat.cols?.points ?? []).map((r) => `<option value="${echapper(r.nom)}"></option>`).join('');
     section.innerHTML = `
       <button class="bouton retour">← Tous les parcours</button>
-      <h2 class="titre-parcours style-course">Demander un parcours</h2>
-      <p>Dites ce qui vous ferait plaisir : la demande part par e-mail, et le nouveau parcours
-        apparaîtra ici dans quelques jours.</p>
-      <form class="formulaire">
-        <label>Où ?
-          <select class="champ" name="zone">
-            ${zones.map((z) => `<option>${echapper(z)}</option>`).join('')}
-            <option>Peu importe</option>
-          </select>
-        </label>
-        <label>Quelle distance ?
-          <select class="champ" name="distance">
-            <option>Environ 40 km</option><option>Environ 60 km</option><option selected>Environ 80 km</option>
-            <option>Environ 100 km</option><option>Environ 120 km</option><option>Environ 150 km</option>
-          </select>
-        </label>
-        <label>Quelle difficulté ?
-          <select class="champ" name="difficulte">
-            <option>Facile</option><option selected>Moyen</option><option>Difficile</option>
-          </select>
-        </label>
-        <label>Précisions (villages, col, envies…)
-          <textarea class="champ" name="precisions" rows="4" placeholder="Ex. : passer par Faucogney et le Saut de l'Ognon"></textarea>
-        </label>
-        <button class="bouton large principal" type="submit">✉️ Envoyer la demande</button>
-      </form>`;
+      <h2 class="titre-parcours style-course">Créer mon parcours</h2>
+      <p>Départ de <b>${echapper(ville.nom)}</b>. Indiquez les villages ou les cols par où passer,
+        <b>dans l'ordre</b>. L'app trace la route tout de suite.</p>
+      <form class="formulaire creation">
+        <div class="etapes"></div>
+        <button class="bouton large ajouter-etape" type="button">＋ Ajouter une étape</button>
+        <label class="case"><input type="checkbox" name="retour"${etat.retour ? ' checked' : ''}>
+          Revenir à ${echapper(ville.nom)} à la fin</label>
+        <button class="bouton large principal" type="submit">🚴 Tracer le parcours</button>
+        <p class="etat-creation" role="status" aria-live="polite"></p>
+      </form>
+      <datalist id="liste-cols">${suggestions}</datalist>
+      <p class="info">Exemples d'étapes : « Faucogney-et-la-Mer », « Col du Mont de Fourche »,
+        « Planche des Belles Filles ». Il faut une connexion internet pour tracer.</p>`;
+
+    const zone = $('.etapes');
+    const dessinerEtapes = () => {
+      zone.innerHTML = etat.etapes.map((v, i) => `
+        <div class="etape">
+          <label>Étape ${i + 1}
+            <input class="champ" name="etape" value="${echapper(v)}" list="liste-cols" autocomplete="off"
+                   autocapitalize="words" placeholder="Village ou col">
+          </label>
+          ${etat.etapes.length > 1 ? `<button class="bouton enlever" type="button" data-i="${i}" aria-label="Enlever l'étape ${i + 1}">✕</button>` : ''}
+        </div>`).join('');
+    };
+    const lireEtapes = () => { etat.etapes = [...zone.querySelectorAll('input')].map((x) => x.value); };
+    dessinerEtapes();
 
     $('.retour').addEventListener('click', vueListe);
-    $('.formulaire').addEventListener('submit', (e) => {
+    $('.ajouter-etape').addEventListener('click', () => {
+      lireEtapes();
+      if (etat.etapes.length < 8) etat.etapes.push('');
+      dessinerEtapes();
+      zone.querySelector('.etape:last-child input').focus();
+    });
+    zone.addEventListener('click', (e) => {
+      const b = e.target.closest('.enlever');
+      if (!b) return;
+      lireEtapes();
+      etat.etapes.splice(Number(b.dataset.i), 1);
+      dessinerEtapes();
+    });
+
+    $('.creation').addEventListener('submit', async (e) => {
       e.preventDefault();
-      const f = new FormData(e.target);
-      const corps = [
-        'Bonjour,', '',
-        'Je voudrais un nouveau parcours dans Échappée :',
-        `- Zone : ${f.get('zone')}`,
-        `- Distance : ${f.get('distance')}`,
-        `- Difficulté : ${f.get('difficulte')}`,
-        `- Précisions : ${f.get('precisions') || '(aucune)'}`,
-        '', 'Merci !',
-      ].join('\n');
-      const email = etat.reglages?.email_demandes ?? '';
-      location.href = `mailto:${email}?subject=${encodeURIComponent('Échappée : demande de parcours')}&body=${encodeURIComponent(corps)}`;
+      lireEtapes();
+      etat.retour = e.target.retour.checked;
+      const etapes = etat.etapes.map((x) => x.trim()).filter(Boolean);
+      const message = $('.etat-creation');
+      const bouton = e.target.querySelector('[type=submit]');
+      if (!etapes.length) { message.textContent = 'Indiquez au moins une étape.'; return; }
+      if (!navigator.onLine) { message.textContent = 'Pas de connexion internet : impossible de tracer.'; return; }
+      bouton.disabled = true;
+      try {
+        const p = await creerParcours({ etapes, retour: etat.retour, ville, cols: etat.cols },
+          (t) => { message.textContent = t; });
+        vueApercu(p);
+      } catch (err) {
+        message.textContent = err.lieu
+          ? `Lieu « ${err.lieu} » introuvable. Vérifiez l'orthographe (avec les tirets, ex. « Saint-Loup-sur-Semouse »).`
+          : 'Le calcul du tracé n\'a pas abouti. Vérifiez la connexion et réessayez.';
+        bouton.disabled = false;
+      }
+    });
+  }
+
+  // Aperçu du parcours tracé, avant de l'enregistrer
+  function vueApercu(p) {
+    window.scrollTo(0, 0);
+    section.innerHTML = `
+      <button class="bouton retour">← Modifier les étapes</button>
+      <h2 class="titre-parcours style-course">Votre parcours</h2>
+
+      <div class="stats">
+        <div><span class="valeur style-course">${p.distance.toLocaleString('fr-FR')}</span><span>km</span></div>
+        <div><span class="valeur style-course">${p.denivele}</span><span>m de D+</span></div>
+        <div><span class="valeur style-course">${p.alt_max}</span><span>m alt. max</span></div>
+        <div class="diff-${p.difficulte}"><span class="valeur style-course">${DIFFICULTES[p.difficulte]}</span><span>difficulté</span></div>
+      </div>
+      ${profilSVG(p)}
+
+      <h3 class="sous-titre style-course">Étapes trouvées</h3>
+      <ul class="reperes">${p.etapes.map((e, i) => `
+        <li><span class="km style-course">${i === 0 ? 'Départ' : i === p.etapes.length - 1 && i > etat.etapes.filter((x) => x.trim()).length ? 'Arrivée' : i}</span>
+          <span>${echapper(e.texte)} <span class="discret">→ ${echapper(e.trouve)}</span></span></li>`).join('')}
+      </ul>
+      <p class="discret">Si une étape a été trouvée au mauvais endroit, revenez en arrière et précisez son nom.</p>
+
+      <form class="formulaire enregistrement">
+        <label>Nom du parcours
+          <input class="champ" name="nom" value="${echapper(p.nom)}" maxlength="80">
+        </label>
+        <button class="bouton large principal" type="submit">💾 Enregistrer dans mes parcours</button>
+        <p class="etat-creation" role="status"></p>
+      </form>`;
+
+    $('.retour').addEventListener('click', vueCreer);
+    $('.enregistrement').addEventListener('submit', (e) => {
+      e.preventDefault();
+      p.nom = e.target.nom.value.trim() || p.nom;
+      if (!enregistrer(p)) {
+        $('.etat-creation').textContent = 'Mémoire pleine : supprimez un ancien parcours perso puis réessayez.';
+        return;
+      }
+      etat.etapes = ['', '', ''];
+      vueDetail(p.id);
     });
   }
 
   // =========================================================== CHARGEMENT
   async function charger() {
-    const [donnees, reglages] = await Promise.allSettled([
+    const [donnees, reglages, cols] = await Promise.allSettled([
       chargerJSON('parcours/index.json'),
       chargerJSON('donnees/reglages.json'),
+      chargerJSON('donnees/cols.json'),
     ]);
+    etat.cols = cols.status === 'fulfilled' ? cols.value : null;
     etat.donnees = donnees.status === 'fulfilled' ? donnees.value : null;
     etat.reglages = reglages.status === 'fulfilled' ? reglages.value : null;
   }

@@ -161,7 +161,7 @@ avec **BRouter** (service gratuit), puis crée le fichier GPX tout seul.
 ```
 
 - `fichier` : en **minuscules, sans accent ni espace** (des tirets à la place).
-- `zone` : de préférence une des zones de `donnees/reglages.json`.
+- `zone` : un titre court de région (« Vallée de la Saône », « Vosges saônoises »…).
 - `passages` : des noms de villages, ou des coordonnées `"47.83020, 6.79289"` pour un point précis
   (sommet d'un col…). Pour obtenir des coordonnées : sur https://www.openstreetmap.org, clic droit → « Afficher l'adresse ».
 - Plus il y a de passages, plus le tracé suit ton idée (4 à 8, c'est bien).
@@ -186,11 +186,19 @@ Le nom affiché est celui écrit dans le GPX (balise `<name>`). Pour le changer,
 
 Ouvre le fichier `.gpx` sur GitHub, clique sur **⋯** (en haut à droite), puis **Delete file**, puis **Commit changes**.
 
-### Les demandes de ton père
+### Les parcours créés par ton père (dans l'app)
 
-Dans l'onglet Parcours, le bouton **« Demander un nouveau parcours »** prépare un e-mail
-(zone, distance, difficulté, précisions) adressé à **alroux01@aol.com**. Pour changer
-cette adresse : `donnees/reglages.json`, ligne `"email_demandes"`.
+Dans l'onglet Parcours, le bouton **« ➕ Créer mon parcours »** permet à ton père de taper
+les villages ou cols par où il veut passer. L'iPhone trace la boucle **tout de suite**
+(BRouter et OpenStreetMap, gratuits), affiche km, D+ et profil, et l'enregistre dans
+« Mes parcours ». Il peut ensuite l'envoyer à son GPS comme les autres.
+
+- Rien à faire de ton côté : pas d'e-mail, pas de GitHub.
+- Ces parcours restent **dans son iPhone** (ils ne sont pas dans la bibliothèque commune).
+  S'il en aime un et que tu veux l'ajouter à la bibliothèque : demande-lui les étapes et fais
+  une « demande » au robot (méthode A ci-dessus).
+- Attention : si Safari efface les données du site (Réglages → Safari → Effacer historique),
+  ses parcours perso sont perdus.
 
 ### Cols et lieux remarquables
 
@@ -263,9 +271,7 @@ Les courses suivies apparaissent aussi en tête du bandeau **« Aujourd'hui à l
 ## 6. Autres réglages
 
 **Fichier :** `donnees/reglages.json`
-- `email_demandes` : adresse qui reçoit les demandes de parcours ;
-- `ville` : lieu de la météo (nom, latitude, longitude) ;
-- `zones` : zones proposées dans le formulaire de demande.
+- `ville` : lieu de la météo et départ des parcours (nom, latitude, longitude).
 
 **Règles de la météo** (« bon jour pour rouler ») : en haut du fichier `js/meteo.js`, bloc `REGLES`
 (seuils de pluie, de vent, de froid et de chaleur, heures de sortie de 9 h à 18 h).

@@ -2,7 +2,7 @@
 // chargement de chaque onglet à la demande, et mises à jour automatiques.
 
 const TITRES = {
-  actus: 'Actus pro',
+  actus: 'Échappée',      // l'accueil porte le nom de l'app
   courses: 'Courses',
   materiel: 'Matériel',
   parcours: 'Parcours',

@@ -1,69 +1,386 @@
 {
   "_aide": "Demandes de parcours. Pour chaque demande, le robot calcule un tracé sur de vraies routes (BRouter, profil vélo de route) en passant par les lieux de \"passages\", dans l'ordre, puis crée le fichier GPX. Il ne le fait qu'une fois : si le fichier parcours/<fichier>.gpx existe déjà, la demande est ignorée. Pour recalculer un parcours, supprimer son fichier .gpx. Un passage peut être un nom de village (\"Faucogney-et-la-Mer\") ou des coordonnées (\"47.8453, 6.5642\"). Voir MAINTENANCE.md.",
-
   "parcours": [
     {
       "fichier": "boucle-des-collines",
       "nom": "Boucle des collines de Vesoul",
       "zone": "Autour de Vesoul",
       "description": "Petite boucle vallonnée pour une sortie courte ou de récupération.",
-      "passages": ["Vesoul", "Échenoz-la-Méline", "Andelarre", "Mont-le-Vernois", "Pontcey", "Pusey", "Charmoille", "Colombier", "Frotey-lès-Vesoul", "Vesoul"]
+      "passages": [
+        "Vesoul",
+        "Échenoz-la-Méline",
+        "Andelarre",
+        "Mont-le-Vernois",
+        "Pontcey",
+        "Pusey",
+        "Charmoille",
+        "Colombier",
+        "Frotey-lès-Vesoul",
+        "Vesoul"
+      ]
     },
     {
       "fichier": "saone-scey",
       "nom": "Vallée de la Saône par Scey",
       "zone": "Vallée de la Saône",
       "description": "Boucle roulante le long de la Saône, par Port-sur-Saône et Scey-sur-Saône.",
-      "passages": ["Vesoul", "Port-sur-Saône", "Scey-sur-Saône-et-Saint-Albin", "Traves", "Vellexon", "Rupt-sur-Saône", "Vesoul"]
+      "passages": [
+        "Vesoul",
+        "Port-sur-Saône",
+        "Scey-sur-Saône-et-Saint-Albin",
+        "Traves",
+        "Vellexon",
+        "Rupt-sur-Saône",
+        "Vesoul"
+      ]
     },
     {
       "fichier": "saone-ray",
       "nom": "La Saône jusqu'à Ray-sur-Saône",
       "zone": "Vallée de la Saône",
       "description": "Plus longue boucle dans la vallée de la Saône, avec le château de Ray-sur-Saône.",
-      "passages": ["Vesoul", "Port-sur-Saône", "Scey-sur-Saône-et-Saint-Albin", "Ray-sur-Saône", "Fresne-Saint-Mamès", "Noidans-lès-Vesoul", "Vesoul"]
+      "passages": [
+        "Vesoul",
+        "Port-sur-Saône",
+        "Scey-sur-Saône-et-Saint-Albin",
+        "Ray-sur-Saône",
+        "Fresne-Saint-Mamès",
+        "Noidans-lès-Vesoul",
+        "Vesoul"
+      ]
     },
     {
       "fichier": "ognon-villersexel",
       "nom": "Vallée de l'Ognon par Villersexel",
       "zone": "Vallée de l'Ognon",
       "description": "Boucle vers le sud-est jusqu'à Villersexel et son château, retour par Montbozon.",
-      "passages": ["Vesoul", "Noroy-le-Bourg", "Villersexel", "Montbozon", "Filain", "Vesoul"]
+      "passages": [
+        "Vesoul",
+        "Noroy-le-Bourg",
+        "Villersexel",
+        "Montbozon",
+        "Filain",
+        "Vesoul"
+      ]
     },
     {
       "fichier": "vosges-saonoises-luxeuil",
       "nom": "Vosges saônoises par Luxeuil et Fougerolles",
       "zone": "Vosges saônoises",
       "description": "Vers le nord par Luxeuil-les-Bains, Fougerolles (pays de la cerise) et le col du Mont de Fourche.",
-      "passages": ["Vesoul", "Saulx", "Luxeuil-les-Bains", "Fougerolles-Saint-Valbert", "Col du Mont de Fourche", "Raddon-et-Chapendu", "Citers", "Vesoul"]
+      "passages": [
+        "Vesoul",
+        "Saulx",
+        "Luxeuil-les-Bains",
+        "Fougerolles-Saint-Valbert",
+        "Col du Mont de Fourche",
+        "Raddon-et-Chapendu",
+        "Citers",
+        "Vesoul"
+      ]
     },
     {
       "fichier": "mille-etangs",
       "nom": "Plateau des Mille Étangs",
       "zone": "Plateau des Mille Étangs",
       "description": "Par Lure et Faucogney, traversée du plateau des Mille Étangs (Écromagny, Esmoulières), retour par Luxeuil.",
-      "passages": ["Vesoul", "Lure", "Faucogney-et-la-Mer", "Écromagny", "Esmoulières", "Raddon-et-Chapendu", "Saint-Sauveur", "Saulx", "Vesoul"]
+      "passages": [
+        "Vesoul",
+        "Lure",
+        "Faucogney-et-la-Mer",
+        "Écromagny",
+        "Esmoulières",
+        "Raddon-et-Chapendu",
+        "Saint-Sauveur",
+        "Saulx",
+        "Vesoul"
+      ]
     },
     {
       "fichier": "ballon-de-servance",
       "nom": "Ballon de Servance",
       "zone": "Ballon de Servance",
       "description": "Par Lure et Melisey, puis la route du fort jusqu'au sommet du Ballon de Servance (1216 m). Retour par le même chemin. Route du fort à vérifier (parfois fermée en hiver).",
-      "passages": ["Vesoul", "Lure", "Melisey", "Servance-Miellin", "47.83020, 6.79289", "Servance-Miellin", "Melisey", "Lure", "Vesoul"]
+      "passages": [
+        "Vesoul",
+        "Lure",
+        "Melisey",
+        "Servance-Miellin",
+        "47.83020, 6.79289",
+        "Servance-Miellin",
+        "Melisey",
+        "Lure",
+        "Vesoul"
+      ]
     },
     {
       "fichier": "planche-des-belles-filles",
       "nom": "La Planche des Belles Filles",
       "zone": "Planche des Belles Filles",
       "description": "La montée mythique du Tour de France depuis Plancher-les-Mines, aller par Ronchamp et sa chapelle Le Corbusier.",
-      "passages": ["Vesoul", "Lure", "Ronchamp", "Champagney", "Plancher-les-Mines", "47.76719, 6.77354", "Plancher-les-Mines", "Champagney", "Lure", "Vesoul"]
+      "passages": [
+        "Vesoul",
+        "Lure",
+        "Ronchamp",
+        "Champagney",
+        "Plancher-les-Mines",
+        "47.76719, 6.77354",
+        "Plancher-les-Mines",
+        "Champagney",
+        "Lure",
+        "Vesoul"
+      ]
     },
     {
       "fichier": "ballon-d-alsace",
       "nom": "Ballon d'Alsace",
       "zone": "Ballon d'Alsace",
       "description": "Le géant du coin : montée par Giromagny jusqu'au col du Ballon d'Alsace (1171 m). Grosse journée.",
-      "passages": ["Vesoul", "Lure", "Champagney", "Auxelles-Bas", "Giromagny", "Col du Ballon", "Giromagny", "Champagney", "Lure", "Vesoul"]
+      "passages": [
+        "Vesoul",
+        "Lure",
+        "Champagney",
+        "Auxelles-Bas",
+        "Giromagny",
+        "Col du Ballon",
+        "Giromagny",
+        "Champagney",
+        "Lure",
+        "Vesoul"
+      ]
+    },
+    {
+      "fichier": "plateau-de-calmoutier",
+      "nom": "Plateau de Calmoutier",
+      "zone": "Autour de Vesoul",
+      "description": "Courte boucle vallonnée au nord-est, idéale pour une sortie d'une heure et demie.",
+      "passages": [
+        "Vesoul",
+        "Colombier",
+        "Calmoutier",
+        "Dampvalley-lès-Colombe",
+        "Vellefaux",
+        "Échenoz-la-Méline",
+        "Vesoul"
+      ]
+    },
+    {
+      "fichier": "noroy-le-bourg",
+      "nom": "Noroy-le-Bourg et Esprels",
+      "zone": "Autour de Vesoul",
+      "description": "Boucle vers l'est par Quincey, Noroy-le-Bourg et Esprels, retour par Colombe.",
+      "passages": [
+        "Vesoul",
+        "Navenne",
+        "Quincey",
+        "Noroy-le-Bourg",
+        "Esprels",
+        "Villers-la-Ville",
+        "Colombe-lès-Vesoul",
+        "Vesoul"
+      ]
+    },
+    {
+      "fichier": "faverney",
+      "nom": "Faverney et la Lanterne",
+      "zone": "Vallée de la Saône",
+      "description": "Vers le nord par Port-sur-Saône et l'abbaye de Faverney, retour par Flagy.",
+      "passages": [
+        "Vesoul",
+        "Port-sur-Saône",
+        "Faverney",
+        "Breurey-lès-Faverney",
+        "Flagy",
+        "Vesoul"
+      ]
+    },
+    {
+      "fichier": "rioz-fondremand",
+      "nom": "Rioz et Fondremand",
+      "zone": "Autour de Vesoul",
+      "description": "Vers le sud par Rioz, retour par Fondremand, l'un des plus beaux villages du coin.",
+      "passages": [
+        "Vesoul",
+        "Vellefaux",
+        "Rioz",
+        "Fondremand",
+        "Neurey-lès-la-Demie",
+        "Vesoul"
+      ]
+    },
+    {
+      "fichier": "luxeuil-court",
+      "nom": "Luxeuil par les petites routes",
+      "zone": "Vosges saônoises",
+      "description": "Aller-retour en boucle jusqu'à Luxeuil-les-Bains par Villers-lès-Luxeuil, retour par Baudoncourt.",
+      "passages": [
+        "Vesoul",
+        "Villers-lès-Luxeuil",
+        "Luxeuil-les-Bains",
+        "Baudoncourt",
+        "Saulx",
+        "Vesoul"
+      ]
+    },
+    {
+      "fichier": "collines-de-gy",
+      "nom": "Les collines de Gy",
+      "zone": "Vallée de l'Ognon",
+      "description": "Vers le sud-ouest par Grandvelle et Gy, retour par Oiselay et Rioz. Ça monte et ça descend.",
+      "passages": [
+        "Vesoul",
+        "Noidans-lès-Vesoul",
+        "Grandvelle-et-le-Perrenot",
+        "Gy",
+        "Oiselay-et-Grachaux",
+        "Rioz",
+        "Vesoul"
+      ]
+    },
+    {
+      "fichier": "lure-ronchamp-hericourt",
+      "nom": "Lure, Ronchamp et Héricourt",
+      "zone": "Planche des Belles Filles",
+      "description": "Vers l'est par Lure et Ronchamp, puis Champagney et Héricourt, retour par Villersexel.",
+      "passages": [
+        "Vesoul",
+        "Lure",
+        "Ronchamp",
+        "Champagney",
+        "Héricourt",
+        "Villersexel",
+        "Vesoul"
+      ]
+    },
+    {
+      "fichier": "jussey-amance",
+      "nom": "Jussey et Amance",
+      "zone": "Vallée de la Saône",
+      "description": "Grande boucle roulante au nord par Jussey, retour par Amance et Faverney.",
+      "passages": [
+        "Vesoul",
+        "Port-sur-Saône",
+        "Jussey",
+        "Amance",
+        "Faverney",
+        "Vesoul"
+      ]
+    },
+    {
+      "fichier": "saone-seveux",
+      "nom": "La Saône par Seveux",
+      "zone": "Vallée de la Saône",
+      "description": "Le long de la Saône jusqu'à Seveux et Savoyeux, retour par Fresne-Saint-Mamès.",
+      "passages": [
+        "Vesoul",
+        "Port-sur-Saône",
+        "Seveux",
+        "Savoyeux",
+        "Fresne-Saint-Mamès",
+        "Vesoul"
+      ]
+    },
+    {
+      "fichier": "ognon-marnay",
+      "nom": "L'Ognon jusqu'à Marnay",
+      "zone": "Vallée de l'Ognon",
+      "description": "Descente vers l'Ognon par Rioz et Voray, jusqu'à Marnay, retour par Gy et Fresne-Saint-Mamès.",
+      "passages": [
+        "Vesoul",
+        "Rioz",
+        "Voray-sur-l'Ognon",
+        "Marnay",
+        "Gy",
+        "Fresne-Saint-Mamès",
+        "Vesoul"
+      ]
+    },
+    {
+      "fichier": "saint-loup-vauvillers",
+      "nom": "Saint-Loup et Vauvillers",
+      "zone": "Vosges saônoises",
+      "description": "Vers le nord par Conflans-sur-Lanterne et Saint-Loup-sur-Semouse, retour par Vauvillers et Amance.",
+      "passages": [
+        "Vesoul",
+        "Faverney",
+        "Conflans-sur-Lanterne",
+        "Saint-Loup-sur-Semouse",
+        "Vauvillers",
+        "Amance",
+        "Vesoul"
+      ]
+    },
+    {
+      "fichier": "rougemont-doubs",
+      "nom": "Rougemont et la vallée du Doubs",
+      "zone": "Vallée de l'Ognon",
+      "description": "Vers le sud-est par Montbozon et Rougemont jusqu'à L'Isle-sur-le-Doubs, retour par Villersexel.",
+      "passages": [
+        "Vesoul",
+        "Montbozon",
+        "Rougemont",
+        "L'Isle-sur-le-Doubs",
+        "Villersexel",
+        "Vesoul"
+      ]
+    },
+    {
+      "fichier": "gray",
+      "nom": "Gray et la Saône",
+      "zone": "Vallée de la Saône",
+      "description": "Vers l'ouest jusqu'à Gray et ses quais, retour par Dampierre-sur-Salon et Combeaufontaine.",
+      "passages": [
+        "Vesoul",
+        "Fresne-Saint-Mamès",
+        "Gray",
+        "Dampierre-sur-Salon",
+        "Combeaufontaine",
+        "Port-sur-Saône",
+        "Vesoul"
+      ]
+    },
+    {
+      "fichier": "champlitte",
+      "nom": "Champlitte",
+      "zone": "Vallée de la Saône",
+      "description": "Grande boucle à l'ouest jusqu'à Champlitte et son château, retour par Dampierre-sur-Salon.",
+      "passages": [
+        "Vesoul",
+        "Combeaufontaine",
+        "Champlitte",
+        "Dampierre-sur-Salon",
+        "Fresne-Saint-Mamès",
+        "Vesoul"
+      ]
+    },
+    {
+      "fichier": "besancon",
+      "nom": "Jusqu'à Besançon",
+      "zone": "Vallée de l'Ognon",
+      "description": "Aller par Rioz jusqu'à Besançon, retour par Marchaux et Montbozon. Circulation en ville.",
+      "passages": [
+        "Vesoul",
+        "Rioz",
+        "Besançon",
+        "Marchaux",
+        "Montbozon",
+        "Vesoul"
+      ]
+    },
+    {
+      "fichier": "belfort",
+      "nom": "Jusqu'à Belfort",
+      "zone": "Planche des Belles Filles",
+      "description": "Grosse journée vers l'est : Lure, Champagney, Belfort et son Lion, retour par Héricourt et Villersexel.",
+      "passages": [
+        "Vesoul",
+        "Lure",
+        "Champagney",
+        "Belfort",
+        "Héricourt",
+        "Villersexel",
+        "Vesoul"
+      ]
     }
   ]
 }

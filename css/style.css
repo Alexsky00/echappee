@@ -2,31 +2,35 @@
    Échappée — feuille de style
    Principes : gros texte, gros boutons, contrastes forts (lisible au soleil),
    quasiment pas d'animation (téléphone ancien).
-   Style « course cycliste » : titres condensés en italique (comme l'habillage
-   TV des courses), couleurs des maillots, dates dans des dossards.
+   Style « habillage TV de course » : fond bleu nuit, jaune maillot, rose et vert,
+   chiffres et titres en Barlow Condensed noir italique.
    ========================================================================== */
+
+/* --- Police des titres, livrée avec l'app (marche hors connexion) ---
+   Barlow Condensed, licence libre SIL OFL : voir polices/OFL.txt */
+@font-face { font-family: "Barlow Condensed"; font-style: italic; font-weight: 800; font-display: swap;
+  src: url("../polices/barlow-condensed-800-italique.woff2") format("woff2"); }
+@font-face { font-family: "Barlow Condensed"; font-style: italic; font-weight: 900; font-display: swap;
+  src: url("../polices/barlow-condensed-900-italique.woff2") format("woff2"); }
+@font-face { font-family: "Barlow Condensed"; font-style: normal; font-weight: 700; font-display: swap;
+  src: url("../polices/barlow-condensed-700.woff2") format("woff2"); }
 
 /* --- Couleurs et polices : modifier ici pour changer tout le thème --- */
 :root {
+  --nuit: #0B1530;         /* fond de l'app */
+  --nuit-2: #16264A;       /* cartes */
+  --nuit-3: #22345E;       /* cartes en relief, images en attente */
+  --nuit-noire: #070E22;   /* barre d'onglets */
+  --bordure: #2A3A62;
   --jaune: #FFD100;        /* maillot jaune : couleur d'accent */
-  --vert-maillot: #00A651; /* maillot vert */
-  --rouge-pois: #E30613;   /* maillot à pois */
-  --rose: #E5007E;         /* maillot rose : Grands Tours */
-  --nuit: #13233F;         /* bleu nuit « asphalte » : en-tête et barre d'onglets */
-  --texte: #111418;
-  --texte-doux: #4A5262;   /* reste très contrasté sur blanc */
-  --fond: #FFFFFF;
-  --fond-doux: #F1F3F6;
-  --bordure: #C9CFD8;
-  --vert: #1E7E34;
-  --orange: #B85C00;
-  --rouge: #C62828;
-
-  /* Police des titres : Avenir Next Condensed est installée sur tous les iPhone
-     (aucun téléchargement). Les suivantes servent sur ordinateur. */
-  --police-titre: "Avenir Next Condensed", "Arial Narrow", "Roboto Condensed", "Segoe UI", sans-serif;
-
-  --barre-onglets: 64px;   /* hauteur de la barre du bas, hors zone de l'iPhone */
+  --rose: #FF2E88;         /* rose course : direct, difficile */
+  --vert: #00B86B;         /* vert sprint : facile, « on roule » */
+  --orange: #FF8A1F;
+  --blanc: #F4F6FA;
+  --texte: #F4F6FA;
+  --texte-doux: #A9B5CC;   /* reste très contrasté sur le bleu nuit */
+  --police-titre: "Barlow Condensed", "Avenir Next Condensed", "Arial Narrow", sans-serif;
+  --barre-onglets: 66px;   /* hauteur de la barre du bas, hors zone de l'iPhone */
 }
 
 * { box-sizing: border-box; }
@@ -34,6 +38,7 @@
 html {
   -webkit-text-size-adjust: 100%;
   -webkit-tap-highlight-color: transparent;
+  background: var(--nuit);
 }
 
 body {
@@ -42,7 +47,7 @@ body {
   font-size: 19px;
   line-height: 1.4;
   color: var(--texte);
-  background: var(--fond);
+  background: var(--nuit);
   /* place pour la barre d'onglets + la barre d'accueil de l'iPhone */
   padding-bottom: calc(var(--barre-onglets) + env(safe-area-inset-bottom));
 }
@@ -52,13 +57,13 @@ button, input, select, textarea { font: inherit; color: inherit; }
 button { cursor: pointer; touch-action: manipulation; }
 [hidden] { display: none !important; }
 
-/* Style « habillage TV » réutilisable : condensé, gras, italique, majuscules */
+/* Style « habillage TV » réutilisable : condensé, noir, italique, majuscules */
 .style-course {
   font-family: var(--police-titre);
-  font-weight: 800;
+  font-weight: 900;
   font-style: italic;
   text-transform: uppercase;
-  letter-spacing: .2px;
+  letter-spacing: -.2px;
 }
 
 /* --- En-tête (passe sous l'encoche grâce à safe-area-inset-top) --- */
@@ -67,47 +72,33 @@ button { cursor: pointer; touch-action: manipulation; }
   top: 0;
   z-index: 10;
   background: var(--nuit);
-  color: #fff;
   padding-top: env(safe-area-inset-top);
 }
 .entete-ligne {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  padding: 8px 16px 9px;
+  gap: 12px;
+  padding: 10px 16px 12px;
 }
+.logo { width: 42px; height: 42px; flex: none; display: block; }
 .entete h1 {
   margin: 0;
   font-family: var(--police-titre);
-  font-size: 30px;
-  font-weight: 800;
+  font-size: 36px;
+  font-weight: 900;
   font-style: italic;
   text-transform: uppercase;
-  line-height: 1.1;
+  line-height: 1;
+  letter-spacing: -.3px;
 }
-.marque {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-family: var(--police-titre);
-  font-weight: 800;
-  font-style: italic;
-  font-size: 17px;
-  color: var(--jaune);
-  text-transform: uppercase;
-}
-.marque svg { width: 26px; height: 26px; }
 
-/* Bande des 4 maillots : jaune, vert, à pois, blanc */
+/* Bande des 4 maillots : jaune, vert, rose, blanc */
 .maillots {
-  height: 7px;
-  background:
-    linear-gradient(90deg, var(--jaune) 0 40%, var(--vert-maillot) 40% 60%, transparent 60% 80%, #fff 80%),
-    radial-gradient(circle, var(--rouge-pois) 1.6px, #fff 1.9px) 0 0 / 7px 7px;
+  height: 6px;
+  background: linear-gradient(90deg, var(--jaune) 0 25%, var(--vert) 25% 50%, var(--rose) 50% 75%, var(--blanc) 75%);
 }
 
-main { padding: 14px 14px 20px; }
+main { padding: 16px 14px 24px; }
 
 /* --- Barre d'onglets --- */
 .barre-onglets {
@@ -115,8 +106,9 @@ main { padding: 14px 14px 20px; }
   left: 0; right: 0; bottom: 0;
   z-index: 10;
   display: flex;
-  background: var(--nuit);
-  padding-bottom: env(safe-area-inset-bottom);
+  background: var(--nuit-noire);
+  border-top: 1px solid #1E2D52;
+  padding: 0 4px env(safe-area-inset-bottom);
 }
 .barre-onglets a {
   flex: 1;
@@ -125,20 +117,20 @@ main { padding: 14px 14px 20px; }
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 2px;
+  gap: 3px;
   text-decoration: none;
-  color: #B8C2D6;
-  font-family: var(--police-titre);
-  font-size: 15px;
-  font-weight: 700;
-  border-top: 4px solid transparent;
+  color: var(--texte-doux);
+  font-size: 13px;
+  font-weight: 600;
 }
+.barre-onglets .icone { display: flex; padding: 4px 16px; border-radius: 14px; }
 .barre-onglets svg {
-  width: 28px; height: 28px;
-  fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+  width: 26px; height: 26px;
+  fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round;
 }
-/* Onglet ouvert : en jaune, comme le leader */
-.barre-onglets a.actif { color: var(--jaune); border-top-color: var(--jaune); }
+/* Onglet ouvert : pastille jaune, comme le leader */
+.barre-onglets a.actif { color: var(--jaune); font-weight: 700; }
+.barre-onglets a.actif .icone { background: var(--jaune); color: var(--nuit); }
 
 /* --- Boutons et champs --- */
 .bouton {
@@ -146,32 +138,41 @@ main { padding: 14px 14px 20px; }
   align-items: center;
   justify-content: center;
   gap: 8px;
-  min-height: 52px;
+  min-height: 54px;
   padding: 0 18px;
-  border: 2px solid var(--nuit);
-  border-radius: 12px;
-  background: var(--fond);
+  border: 2px solid var(--bordure);
+  border-radius: 14px;
+  background: var(--nuit-2);
   font-weight: 700;
   text-decoration: none;
+  color: var(--texte);
 }
-.bouton.principal { background: var(--nuit); color: #fff; }
+/* Bouton principal : gros, jaune, en lettres de course */
+.bouton.principal {
+  background: var(--jaune); border-color: var(--jaune); color: var(--nuit);
+  font-family: var(--police-titre); font-weight: 900; font-style: italic; text-transform: uppercase;
+  font-size: 24px; min-height: 60px;
+}
 .bouton.large { width: 100%; }
+.bouton:disabled { opacity: .55; }
 
 .champ {
   width: 100%;
-  min-height: 52px;
+  min-height: 54px;
   padding: 0 14px;
   border: 2px solid var(--bordure);
-  border-radius: 12px;
-  background: var(--fond);
+  border-radius: 14px;
+  background: var(--nuit-2);
   font-size: 19px;          /* 16 px minimum : sinon l'iPhone zoome tout seul */
 }
-.champ:focus { outline: 3px solid var(--jaune); border-color: var(--nuit); }
+.champ::placeholder { color: #7D8BA8; }
+.champ:focus { outline: 3px solid var(--jaune); outline-offset: 1px; border-color: var(--jaune); }
 select.champ { appearance: none; -webkit-appearance: none;
-  background: var(--fond) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6 9l6 6 6-6' fill='none' stroke='%2313233F' stroke-width='3'/%3E%3C/svg%3E") no-repeat right 12px center / 22px;
+  background: var(--nuit-2) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6 9l6 6 6-6' fill='none' stroke='%23FFD100' stroke-width='3'/%3E%3C/svg%3E") no-repeat right 12px center / 22px;
   padding-right: 44px; }
+select.champ option { background: var(--nuit-2); color: var(--texte); }
 
-.outils { display: grid; gap: 10px; margin-bottom: 16px; }
+.outils { display: grid; gap: 10px; margin-bottom: 18px; }
 .outils .ligne { display: flex; gap: 10px; }
 .outils .ligne > * { flex: 1; }
 
@@ -179,63 +180,76 @@ select.champ { appearance: none; -webkit-appearance: none;
 .bascule[aria-pressed="true"] { background: var(--jaune); border-color: var(--jaune); color: var(--nuit); }
 
 /* Choix segmenté (ex. Cette semaine / À venir / Par mois) */
-.segments { display: flex; border: 2px solid var(--nuit); border-radius: 12px; overflow: hidden; }
+.segments { display: flex; gap: 4px; padding: 4px; background: var(--nuit-2); border-radius: 14px; }
 .segments button {
-  flex: 1; min-height: 50px; border: 0; background: var(--fond); padding: 0 4px;
-  font-family: var(--police-titre); font-weight: 800; font-style: italic; text-transform: uppercase; font-size: 17px; white-space: nowrap;
+  flex: 1; min-height: 48px; border: 0; border-radius: 10px; background: transparent; padding: 0 4px;
+  color: var(--texte-doux);
+  font-family: var(--police-titre); font-weight: 900; font-style: italic; text-transform: uppercase; font-size: 19px; white-space: nowrap;
 }
-.segments button + button { border-left: 2px solid var(--nuit); }
-.segments button[aria-pressed="true"] { background: var(--nuit); color: var(--jaune); }
+.segments button[aria-pressed="true"] { background: var(--jaune); color: var(--nuit); }
+
+/* Petit titre de rubrique avec les 3 traits de couleur */
+.sous-titre, .titre-groupe {
+  display: flex; align-items: center; gap: 10px;
+  margin: 26px 0 10px; font-size: 26px; line-height: 1;
+}
+.sous-titre::after, .titre-groupe::after {
+  content: ""; flex: none; width: 66px; height: 5px; margin-left: auto;
+  background: linear-gradient(90deg, var(--jaune) 0 30%, transparent 30% 35%, var(--vert) 35% 65%, transparent 65% 70%, var(--rose) 70%);
+  transform: skewX(-20deg);
+}
+.titre-groupe { list-style: none; margin: 8px 0 0; }
 
 /* --- Messages --- */
 .vide, .info {
   padding: 18px;
-  border-radius: 12px;
-  background: var(--fond-doux);
+  border-radius: 14px;
+  background: var(--nuit-2);
   color: var(--texte-doux);
   text-align: center;
 }
-/* Message vide sur fond « maillot à pois » très discret */
-.vide {
-  background:
-    radial-gradient(circle, rgba(227, 6, 19, .10) 4px, transparent 4.5px) 0 0 / 22px 22px,
-    var(--fond-doux);
-}
-.info { text-align: left; font-size: 16px; margin-top: 16px; }
+.info { text-align: left; font-size: 16px; margin-top: 18px; }
 .discret { color: var(--texte-doux); font-size: 16px; }
 
-/* --- Bandeau « Aujourd'hui à la TV » (habillage TV de course) --- */
+/* --- Bandeau « Aujourd'hui à la TV » : grande carte jaune --- */
 .bandeau-tv {
   display: block;
-  background: var(--nuit);
-  color: #fff;
-  border-radius: 14px;
+  position: relative;
   overflow: hidden;
-  margin-bottom: 16px;
+  background: var(--jaune);
+  color: var(--nuit);
+  border-radius: 18px;
+  padding: 16px 16px 14px;
+  margin-bottom: 14px;
   text-decoration: none;
-  border-bottom: 5px solid var(--jaune);
+}
+/* petit profil de montagne en filigrane */
+.bandeau-tv::after {
+  content: ""; position: absolute; right: -16px; top: 30px; width: 210px; height: 64px; opacity: .16;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 60'%3E%3Cpath d='M0 58 L40 50 L70 52 L100 30 L120 34 L150 6 L175 40 L200 44' fill='none' stroke='%230B1530' stroke-width='5' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat center / contain;
 }
 .tv-etiquette {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background: var(--jaune);
-  color: var(--nuit);
-  padding: 5px 18px 5px 14px;
-  font-size: 17px;
-  clip-path: polygon(0 0, 100% 0, calc(100% - 12px) 100%, 0 100%);   /* coin biseauté */
+  background: var(--nuit);
+  color: var(--jaune);
+  padding: 4px 16px 4px 10px;
+  font-size: 18px;
+  clip-path: polygon(0 0, 100% 0, calc(100% - 10px) 100%, 0 100%);   /* coin biseauté */
 }
-.bandeau-tv.direct .tv-etiquette { background: var(--rouge); color: #fff; }
-.point-direct { width: 11px; height: 11px; border-radius: 50%; background: #fff; }
-.tv-corps { padding: 8px 14px 12px; }
-.tv-ligne + .tv-ligne { margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,.2); }
-.tv-course { font-size: 25px; line-height: 1.1; }
-.tv-course .etape { color: var(--jaune); font-size: 18px; }
-.tv-chaine { font-size: 17px; color: #DCE3F0; margin-top: 3px; }
-.tv-chaine .gratuit { color: #7BE495; }
+.bandeau-tv.direct .tv-etiquette { background: var(--rose); color: #fff; }
+.point-direct { width: 10px; height: 10px; border-radius: 50%; background: #fff; }
+.tv-corps { padding-top: 10px; position: relative; z-index: 1; }
+.tv-ligne + .tv-ligne { margin-top: 12px; padding-top: 12px; border-top: 2px solid rgba(11,21,48,.18); }
+.tv-course { font-size: 40px; line-height: .92; }
+.tv-course .etape { display: block; font-size: 20px; margin-top: 4px; }
+.tv-chaine { font-size: 17px; font-weight: 700; margin-top: 8px; }
+.tv-chaine .gratuit { background: var(--nuit); color: #fff; padding: 2px 8px; border-radius: 6px; }
 /* Compte à rebours avant la prochaine course */
-.tv-attente { display: flex; align-items: center; gap: 14px; }
-.compte-a-rebours { font-size: 40px; color: var(--jaune); line-height: 1; flex: none; }
+.tv-attente { display: flex; align-items: center; gap: 16px; }
+.tv-attente .tv-course { font-size: 30px; }
+.compte-a-rebours { font-size: 64px; line-height: .85; flex: none; }
 
 /* --- Articles --- */
 .liste { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
@@ -243,24 +257,22 @@ select.champ { appearance: none; -webkit-appearance: none;
 .article {
   display: grid;
   grid-template-columns: 1fr 48px;
-  border: 1px solid var(--bordure);
-  border-radius: 14px;
+  background: var(--nuit-2);
+  border-radius: 16px;
   overflow: hidden;
 }
 .article > a { display: flex; gap: 12px; padding: 10px; text-decoration: none; min-width: 0; }
 .article img {
   flex: none;
-  width: 104px; height: 78px;
+  width: 104px; height: 80px;
   object-fit: cover;
-  border-radius: 8px;
-  background: var(--fond-doux);
+  border-radius: 10px;
+  background: var(--nuit-3);
 }
 .article .source {
   display: inline-block;
   font-family: var(--police-titre); font-weight: 800; font-style: italic; text-transform: uppercase;
-  font-size: 14px; color: var(--nuit);
-  border-left: 4px solid var(--jaune);
-  padding-left: 6px;
+  font-size: 15px; letter-spacing: .5px; color: var(--jaune);
   margin-bottom: 3px;
 }
 .article h3 { margin: 0 0 4px; font-size: 18px; line-height: 1.3; font-weight: 700;
@@ -272,21 +284,21 @@ select.champ { appearance: none; -webkit-appearance: none;
   background: transparent;
   font-size: 30px;
   line-height: 1;
-  color: #8A93A3;
+  color: #7D8BA8;
   align-self: start;
   height: 56px;
 }
-.etoile[aria-pressed="true"] { color: #E0A800; }
+.etoile[aria-pressed="true"] { color: var(--jaune); }
 
 /* --- Courses --- */
 /* Titre de mois façon banderole */
 .mois-titre {
   display: inline-block;
-  margin: 22px 0 10px;
-  padding: 4px 18px 4px 12px;
-  background: var(--nuit);
-  color: var(--jaune);
-  font-size: 21px;
+  margin: 24px 0 10px;
+  padding: 4px 20px 4px 12px;
+  background: var(--jaune);
+  color: var(--nuit);
+  font-size: 24px;
   clip-path: polygon(0 0, 100% 0, calc(100% - 12px) 100%, 0 100%);
 }
 .mois-titre:first-child { margin-top: 0; }
@@ -295,23 +307,24 @@ select.champ { appearance: none; -webkit-appearance: none;
   display: grid;
   grid-template-columns: 74px 1fr;
   gap: 12px;
-  border: 1px solid var(--bordure);
-  border-radius: 14px;
+  background: var(--nuit-2);
+  border-radius: 16px;
   padding: 12px;
 }
-.course.en-cours { background: #FFF9DB; border-color: var(--jaune); }
+.course.en-cours { box-shadow: inset 0 0 0 3px var(--jaune); }
 
 /* Dossard : la date, comme un numéro épinglé sur le maillot */
 .dossard {
   position: relative;
   align-self: start;
   background: #fff;
-  border: 2px solid var(--texte);
+  color: #111;
   border-radius: 6px;
-  padding: 8px 2px 6px;
+  padding: 9px 2px 6px;
   text-align: center;
   font-family: var(--police-titre);
-  font-weight: 800;
+  font-weight: 900;
+  font-style: italic;
   line-height: 1;
 }
 /* les 4 épingles */
@@ -324,13 +337,13 @@ select.champ { appearance: none; -webkit-appearance: none;
     radial-gradient(circle, #8A93A3 2px, transparent 2.5px) right top / 8px 8px no-repeat;
 }
 .dossard::after { transform: rotate(180deg); }
-.dossard .jour { display: block; font-size: 34px; }
-.dossard .mois { display: block; font-size: 15px; text-transform: uppercase; margin-top: 3px; }
-.dossard .duree { display: block; font-size: 13px; color: var(--texte-doux); margin-top: 4px; font-style: italic; }
+.dossard .jour { display: block; font-size: 38px; }
+.dossard .mois { display: block; font-size: 16px; text-transform: uppercase; margin-top: 2px; }
+.dossard .duree { display: block; font-size: 13px; color: #4A5262; margin-top: 4px; font-weight: 800; }
 
 .course-haut { display: flex; justify-content: space-between; gap: 8px; }
-.course h3 { margin: 0; font-size: 23px; line-height: 1.1; }
-.course .dates { font-weight: 600; margin: 4px 0; font-size: 17px; color: var(--texte-doux); }
+.course h3 { margin: 0; font-size: 27px; line-height: .98; }
+.course .dates { font-weight: 600; margin: 5px 0; font-size: 17px; color: var(--texte-doux); }
 .course .etoile { height: 40px; margin: -6px -6px 0 0; }
 
 .badges { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0; }
@@ -338,21 +351,20 @@ select.champ { appearance: none; -webkit-appearance: none;
   font-size: 15px; font-weight: 700;
   padding: 3px 9px;
   border-radius: 6px;
-  background: var(--fond-doux);
+  background: var(--nuit-3);
   color: var(--texte);
 }
-.badge.en-cours { background: var(--rouge); color: #fff; }
+.badge.en-cours { background: var(--rose); color: var(--nuit); }
 /* Catégories aux couleurs des maillots */
-.badge.cat { font-family: var(--police-titre); font-weight: 800; font-style: italic; text-transform: uppercase; }
-.badge.cat-grand-tour  { background: var(--rose); color: #fff; }
+.badge.cat, .badge[class*="diff-"] { font-family: var(--police-titre); font-weight: 900; font-style: italic; text-transform: uppercase; font-size: 16px; }
+.badge.cat-grand-tour  { background: var(--rose); color: var(--nuit); }
 .badge.cat-monument    { background: var(--jaune); color: var(--nuit); }
-.badge.cat-worldtour   { background: var(--nuit); color: #fff; }
-.badge.cat-classique   { background: var(--vert-maillot); color: #fff; }
+.badge.cat-worldtour   { background: var(--blanc); color: var(--nuit); }
+.badge.cat-classique   { background: var(--vert); color: var(--nuit); }
 /* Championnats : maillot arc-en-ciel */
 .badge.cat-championnat {
   background: linear-gradient(#fff 0 30%, #0072CE 30% 38%, #E30613 38% 46%, #111 46% 54%, #FFD100 54% 62%, #00A651 62% 70%, #fff 70%);
-  color: var(--texte);
-  border: 1px solid var(--bordure);
+  color: #111;
   text-shadow: 0 0 3px #fff, 0 0 3px #fff;
 }
 
@@ -361,98 +373,116 @@ select.champ { appearance: none; -webkit-appearance: none;
 .a-verifier { color: var(--orange); font-size: 15px; }
 
 .course .actions { margin-top: 10px; }
-.course .actions .bouton { min-height: 46px; font-size: 17px; padding: 0 12px; }
+.course .actions .bouton { min-height: 48px; font-size: 17px; padding: 0 12px; }
 
 /* --- Parcours --- */
 .parcours {
-  border: 1px solid var(--bordure);
-  border-radius: 14px;
-  padding: 12px 12px 10px;
+  background: var(--nuit-2);
+  border-radius: 16px;
+  padding: 14px 14px 12px;
   cursor: pointer;
 }
 .parcours-haut { display: flex; justify-content: space-between; align-items: start; gap: 8px; }
-.parcours h3 { margin: 0; font-size: 23px; line-height: 1.1; }
-.chiffres { display: flex; gap: 16px; margin: 6px 0 8px; font-size: 18px; }
-.chiffres b { font-family: var(--police-titre); font-size: 22px; font-style: italic; }
+.parcours h3 { margin: 0; font-size: 27px; line-height: .98; }
+.chiffres { display: flex; gap: 18px; margin: 8px 0 8px; font-size: 16px; color: var(--texte-doux); align-items: baseline; }
+.chiffres b { font-family: var(--police-titre); font-weight: 900; font-size: 30px; font-style: italic; color: var(--texte); }
+.chiffres span:first-child b { color: var(--jaune); }
 .cols { font-size: 16px; color: var(--texte-doux); margin-top: 6px; }
 
-.badge.diff-facile, .stats .diff-facile       { background: var(--vert); color: #fff; }
-.badge.diff-moyen, .stats .diff-moyen         { background: var(--orange); color: #fff; }
-.badge.diff-difficile, .stats .diff-difficile { background: var(--rouge); color: #fff; }
+.badge.diff-facile, .stats .diff-facile       { background: var(--vert); color: var(--nuit); }
+.badge.diff-moyen, .stats .diff-moyen         { background: var(--orange); color: var(--nuit); }
+.badge.diff-difficile, .stats .diff-difficile { background: var(--rose); color: var(--nuit); }
 
 .profil { display: block; width: 100%; height: auto; }
-.profil.mini { height: 54px; border-radius: 6px; background: var(--fond-doux); }
+.profil.mini { height: 54px; border-radius: 8px; background: var(--nuit); }
 .profil .axe { font-size: 11px; fill: var(--texte-doux); font-family: -apple-system, sans-serif; }
-.profil .col { font-size: 12px; font-weight: 700; fill: var(--nuit); font-family: -apple-system, sans-serif; }
-.legende-pentes { display: flex; gap: 12px; flex-wrap: wrap; font-size: 15px; color: var(--texte-doux); margin-top: 4px; }
+.profil .col { font-size: 14px; font-weight: 900; font-style: italic; fill: var(--jaune); font-family: var(--police-titre); text-transform: uppercase; }
+.legende-pentes { display: flex; gap: 12px; flex-wrap: wrap; font-size: 15px; color: var(--texte-doux); margin-top: 6px; }
 .legende-pentes i { display: inline-block; width: 14px; height: 14px; border-radius: 3px; margin-right: 4px; vertical-align: -2px; }
 
-.retour { margin-bottom: 12px; min-height: 46px; font-size: 17px; }
-.titre-parcours { margin: 4px 0 2px; font-size: 30px; line-height: 1.05; }
-.sous-titre {
-  margin: 22px 0 8px; font-size: 21px;
-  border-left: 6px solid var(--jaune); padding-left: 8px;
-}
+.retour { margin-bottom: 14px; min-height: 48px; font-size: 18px; border: 0; background: transparent; padding: 0; color: var(--jaune); }
+.titre-parcours { margin: 4px 0 4px; font-size: 44px; line-height: .92; }
 
-.stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 14px 0 4px; }
+.stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 16px 0 6px; }
 .stats > div {
-  background: var(--nuit); color: #fff;
-  border-radius: 12px; padding: 10px 12px;
+  background: var(--nuit-2);
+  border-radius: 14px; padding: 12px 14px 10px;
   display: flex; flex-direction: column;
 }
-.stats .valeur { font-size: 32px; line-height: 1; color: var(--jaune); }
-.stats .diff-facile .valeur, .stats .diff-moyen .valeur, .stats .diff-difficile .valeur { color: #fff; font-size: 28px; }
-.stats span:last-child { font-size: 16px; margin-top: 4px; }
+.stats .valeur { font-size: 48px; line-height: .9; }
+.stats > div:first-child .valeur { color: var(--jaune); }
+.stats .diff-facile .valeur, .stats .diff-moyen .valeur, .stats .diff-difficile .valeur { font-size: 36px; }
+.stats span:last-child { font-family: var(--police-titre); font-weight: 700; font-size: 17px; letter-spacing: 1.5px; text-transform: uppercase; margin-top: 4px; opacity: .85; }
 
-.actions-parcours { display: grid; gap: 10px; margin-top: 18px; }
+.actions-parcours { display: grid; gap: 10px; margin-top: 20px; }
 .actions-parcours .discret { margin: 0; }
 
 .reperes { list-style: none; margin: 0; padding: 0; }
-.reperes li { padding: 10px 0; border-bottom: 1px solid var(--bordure); display: flex; gap: 10px; align-items: baseline; }
-.reperes .km { flex: none; width: 66px; color: var(--nuit); font-size: 18px; }
+.reperes li { padding: 11px 0; border-bottom: 1px solid var(--bordure); display: flex; gap: 10px; align-items: baseline; }
+.reperes .km { flex: none; width: 76px; color: var(--jaune); font-size: 20px; }
 
-.carte { height: 380px; border-radius: 14px; overflow: hidden; border: 2px solid var(--nuit); }
+.carte { height: 380px; border-radius: 16px; overflow: hidden; border: 2px solid var(--bordure); }
+.leaflet-container { font-size: 14px; }
+.leaflet-tooltip { color: #111; }
 
-.formulaire { display: grid; gap: 14px; margin-top: 10px; }
+.formulaire { display: grid; gap: 14px; margin-top: 12px; }
 .formulaire label { display: grid; gap: 6px; font-weight: 700; }
 .formulaire textarea.champ { padding: 12px 14px; min-height: 110px; resize: vertical; font-weight: 400; }
+
+/* Créer mon parcours */
+.creer { margin-bottom: 14px; }
+.etapes { display: grid; gap: 12px; }
+.etape { display: flex; gap: 8px; align-items: end; }
+.etape label { flex: 1; }
+.etape .enlever { flex: none; width: 54px; min-height: 54px; padding: 0; font-size: 20px; }
+.formulaire .case { display: flex; align-items: center; gap: 10px; font-weight: 600; }
+.formulaire .case input { width: 26px; height: 26px; accent-color: var(--jaune); }
+.etat-creation { font-weight: 700; min-height: 1.4em; margin: 0; color: var(--jaune); }
 
 /* --- Météo --- */
 .pastille-meteo {
   display: flex; align-items: center; gap: 10px;
-  margin: -6px 0 16px;
-  padding: 10px 14px;
-  border-radius: 12px;
-  border: 2px solid var(--bordure);
+  margin: 0 0 18px;
+  padding: 12px 14px;
+  min-height: 56px;
+  border-radius: 14px;
+  background: var(--nuit-2);
   text-decoration: none;
   font-size: 17px;
 }
-.pastille-meteo .aller { margin-left: auto; font-size: 26px; line-height: 1; color: var(--texte-doux); }
-.rond { flex: none; width: 22px; height: 22px; border-radius: 50%; background: var(--bordure); }
+.pastille-meteo .aller { margin-left: auto; font-size: 28px; line-height: 1; color: var(--jaune); }
+.rond { flex: none; width: 20px; height: 20px; border-radius: 50%; background: var(--bordure); }
 .rond.vert, .pastille-meteo.vert .rond { background: var(--vert); }
 .rond.orange, .pastille-meteo.orange .rond { background: var(--orange); }
-.rond.rouge, .pastille-meteo.rouge .rond { background: var(--rouge); }
+.rond.rouge, .pastille-meteo.rouge .rond { background: var(--rose); }
 
-.verdict { border-radius: 16px; padding: 14px 16px; color: #fff; }
+/* Le verdict : énorme, en couleur pleine, texte bleu nuit */
+.verdict { position: relative; overflow: hidden; border-radius: 20px; padding: 18px 18px 16px; color: var(--nuit); }
 .verdict.vert { background: var(--vert); }
 .verdict.orange { background: var(--orange); }
-.verdict.rouge { background: var(--rouge); }
-.verdict-haut { display: flex; align-items: center; gap: 14px; }
-.verdict-emoji { font-size: 52px; line-height: 1; }
-.verdict-quand { font-size: 17px; opacity: .9; }
-.verdict-texte { font-size: 30px; line-height: 1.05; }
-.raisons { margin: 12px 0 0; padding: 0; list-style: none; font-size: 18px; }
+.verdict.rouge { background: var(--rose); }
+/* traits de vitesse en filigrane */
+.verdict::after {
+  content: ""; position: absolute; right: -24px; top: 14px; width: 150px; height: 66px; opacity: .2;
+  background: linear-gradient(var(--nuit) 0 16px, transparent 16px 25px, var(--nuit) 25px 41px, transparent 41px 50px, var(--nuit) 50px 66px);
+  transform: skewX(-20deg);
+}
+.verdict-quand { font-family: var(--police-titre); font-weight: 800; font-style: italic; text-transform: uppercase; font-size: 18px; position: relative; z-index: 1; }
+.verdict-avant { font-size: 32px; line-height: .9; margin-top: 6px; }
+.verdict-texte { font-size: 66px; line-height: .86; letter-spacing: -1px; }
+.raisons { margin: 14px 0 0; padding: 0; list-style: none; font-size: 18px; font-weight: 600; }
 .raisons li + li { margin-top: 4px; }
-.creneau { margin: 10px 0 0; font-size: 18px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,.35); }
+.creneau { margin: 12px 0 0; font-size: 18px; padding-top: 12px; border-top: 2px solid rgba(11,21,48,.2); }
+.creneau b { font-family: var(--police-titre); font-weight: 900; font-style: italic; font-size: 30px; }
 
 .conseil-vent {
   display: flex; align-items: center; gap: 14px;
-  margin-top: 12px; padding: 12px 14px;
-  border: 2px solid var(--nuit); border-radius: 14px;
-  color: var(--nuit);
+  margin-top: 12px; padding: 14px;
+  background: var(--nuit-2); border-radius: 16px;
 }
-.conseil-vent p { margin: 0; font-size: 17px; color: var(--texte); }
-.fleche { flex: none; display: inline-block; vertical-align: middle; color: var(--nuit); }
+.conseil-vent p { margin: 0; font-size: 17px; }
+.conseil-vent b { color: var(--jaune); }
+.fleche { flex: none; display: inline-block; vertical-align: middle; color: var(--jaune); }
 
 /* Prochaines heures : bande qui défile horizontalement */
 .heures {
@@ -460,22 +490,23 @@ select.champ { appearance: none; -webkit-appearance: none;
   display: flex; gap: 8px; overflow-x: auto; -webkit-overflow-scrolling: touch;
 }
 .heures li {
-  flex: none; width: 70px;
+  flex: none; width: 72px;
   display: flex; flex-direction: column; align-items: center; gap: 3px;
-  padding: 8px 4px; border-radius: 12px; background: var(--fond-doux);
+  padding: 10px 4px; border-radius: 14px; background: var(--nuit-2);
 }
-.heures .h { font-weight: 700; font-size: 16px; }
+.heures .h { font-weight: 700; font-size: 16px; color: var(--texte-doux); }
 .heures .e { font-size: 26px; line-height: 1.1; }
-.heures .t { font-family: var(--police-titre); font-weight: 800; font-size: 22px; }
-.heures .p { font-size: 15px; color: #1565C0; font-weight: 700; }
+.heures .t { font-family: var(--police-titre); font-weight: 900; font-style: italic; font-size: 30px; line-height: 1; }
+.heures .p { font-size: 15px; color: #7CC4FF; font-weight: 700; }
 .heures .v { font-size: 15px; display: flex; align-items: center; gap: 2px; }
 .legende-heures { margin: 4px 0 0; font-size: 14px; }
 
-.jours { list-style: none; margin: 0; padding: 0; }
-.jour { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--bordure); }
+.jours { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.jour { display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: var(--nuit-2); border-radius: 14px; }
 .jour-nom { display: flex; flex-direction: column; flex: 1; min-width: 0; }
 .jour-nom b { text-transform: capitalize; }
 .jour-nom .discret { font-size: 15px; }
 .jour-ciel { font-size: 30px; }
 .jour-chiffres { display: flex; flex-direction: column; align-items: flex-end; font-size: 17px; }
+.jour-chiffres b { font-family: var(--police-titre); font-weight: 900; font-style: italic; font-size: 24px; }
 .jour-chiffres .discret { font-size: 14px; display: flex; align-items: center; gap: 2px; }

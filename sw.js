@@ -26,7 +26,11 @@ const FICHIERS_APP = [
   'js/actus.js',
   'js/courses.js',
   'js/parcours.js',
+  'js/mes-parcours.js',
   'js/meteo.js',
+  'polices/barlow-condensed-700.woff2',
+  'polices/barlow-condensed-800-italique.woff2',
+  'polices/barlow-condensed-900-italique.woff2',
   'icones/apple-touch-icon.png',
   'icones/icone-192.png',
 ];

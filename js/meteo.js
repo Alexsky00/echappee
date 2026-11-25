@@ -20,9 +20,10 @@ const REGLES = {
 };
 
 const VERDICTS = {
-  vert:   { texte: 'Bon jour pour rouler !',      emoji: '🚴', couleur: 'vert' },
-  orange: { texte: 'Sortie possible, avec précautions', emoji: '⚠️', couleur: 'orange' },
-  rouge:  { texte: 'Pas un jour pour rouler',      emoji: '🛋️', couleur: 'rouge' },
+  // texte : phrase de la pastille (onglet Actus) ; avant + gros : le grand verdict de l'onglet Météo
+  vert:   { texte: 'Bon jour pour rouler !',            avant: 'Oui,',      gros: 'On roule !', couleur: 'vert' },
+  orange: { texte: 'Sortie possible, avec précautions', avant: 'Possible,', gros: 'Prudence',   couleur: 'orange' },
+  rouge:  { texte: 'Pas un jour pour rouler',           avant: 'Non,',      gros: 'Repos',      couleur: 'rouge' },
 };
 
 // Codes météo internationaux (WMO) → emoji + texte
@@ -221,15 +222,11 @@ export function init(section) {
     const dirTexte = v ? nomDirection(v.dir) : '';
     section.innerHTML = `
       ${v ? `<div class="verdict ${v.couleur}">
-        <div class="verdict-haut">
-          <span class="verdict-emoji">${v.emoji}</span>
-          <div>
-            <div class="verdict-quand style-course">${quand} · ${dateJour}</div>
-            <div class="verdict-texte style-course">${v.texte}</div>
-          </div>
-        </div>
+        <div class="verdict-quand">${quand} · ${dateJour}</div>
+        <div class="verdict-avant style-course">${v.avant}</div>
+        <div class="verdict-texte style-course">${v.gros}</div>
         ${v.raisons.length ? `<ul class="raisons">${v.raisons.map((r) => `<li>${r}</li>`).join('')}</ul>` : '<p class="raisons">Pas de pluie, peu de vent, température agréable.</p>'}
-        ${v.meilleur ? `<p class="creneau">⏱️ Meilleur moment : <b>${v.meilleur.de} h – ${v.meilleur.a} h</b></p>` : ''}
+        ${v.meilleur ? `<p class="creneau">Meilleur moment : <b>${v.meilleur.de} h – ${v.meilleur.a} h</b></p>` : ''}
       </div>
       <div class="conseil-vent">
         ${fleche(v.dir, 40)}
