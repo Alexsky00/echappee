@@ -1,0 +1,18 @@
+{
+  "_aide": "Réglages généraux de l'app. email_demandes : adresse qui reçoit les demandes de parcours envoyées depuis l'app. ville : lieu de la météo et point de départ des parcours.",
+
+  "email_demandes": "alroux01@aol.com",
+
+  "ville": { "nom": "Vesoul", "lat": 47.6227, "lon": 6.1556 },
+
+  "zones": [
+    "Vallée de l'Ognon",
+    "Vallée de la Saône",
+    "Vosges saônoises",
+    "Plateau des Mille Étangs",
+    "Ballon de Servance",
+    "Planche des Belles Filles",
+    "Ballon d'Alsace",
+    "Autour de Vesoul"
+  ]
+}

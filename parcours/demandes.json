@@ -1,0 +1,69 @@
+{
+  "_aide": "Demandes de parcours. Pour chaque demande, le robot calcule un tracé sur de vraies routes (BRouter, profil vélo de route) en passant par les lieux de \"passages\", dans l'ordre, puis crée le fichier GPX. Il ne le fait qu'une fois : si le fichier parcours/<fichier>.gpx existe déjà, la demande est ignorée. Pour recalculer un parcours, supprimer son fichier .gpx. Un passage peut être un nom de village (\"Faucogney-et-la-Mer\") ou des coordonnées (\"47.8453, 6.5642\"). Voir MAINTENANCE.md.",
+
+  "parcours": [
+    {
+      "fichier": "boucle-des-collines",
+      "nom": "Boucle des collines de Vesoul",
+      "zone": "Autour de Vesoul",
+      "description": "Petite boucle vallonnée pour une sortie courte ou de récupération.",
+      "passages": ["Vesoul", "Échenoz-la-Méline", "Andelarre", "Mont-le-Vernois", "Pontcey", "Pusey", "Charmoille", "Colombier", "Frotey-lès-Vesoul", "Vesoul"]
+    },
+    {
+      "fichier": "saone-scey",
+      "nom": "Vallée de la Saône par Scey",
+      "zone": "Vallée de la Saône",
+      "description": "Boucle roulante le long de la Saône, par Port-sur-Saône et Scey-sur-Saône.",
+      "passages": ["Vesoul", "Port-sur-Saône", "Scey-sur-Saône-et-Saint-Albin", "Traves", "Vellexon", "Rupt-sur-Saône", "Vesoul"]
+    },
+    {
+      "fichier": "saone-ray",
+      "nom": "La Saône jusqu'à Ray-sur-Saône",
+      "zone": "Vallée de la Saône",
+      "description": "Plus longue boucle dans la vallée de la Saône, avec le château de Ray-sur-Saône.",
+      "passages": ["Vesoul", "Port-sur-Saône", "Scey-sur-Saône-et-Saint-Albin", "Ray-sur-Saône", "Fresne-Saint-Mamès", "Noidans-lès-Vesoul", "Vesoul"]
+    },
+    {
+      "fichier": "ognon-villersexel",
+      "nom": "Vallée de l'Ognon par Villersexel",
+      "zone": "Vallée de l'Ognon",
+      "description": "Boucle vers le sud-est jusqu'à Villersexel et son château, retour par Montbozon.",
+      "passages": ["Vesoul", "Noroy-le-Bourg", "Villersexel", "Montbozon", "Filain", "Vesoul"]
+    },
+    {
+      "fichier": "vosges-saonoises-luxeuil",
+      "nom": "Vosges saônoises par Luxeuil et Fougerolles",
+      "zone": "Vosges saônoises",
+      "description": "Vers le nord par Luxeuil-les-Bains, Fougerolles (pays de la cerise) et le col du Mont de Fourche.",
+      "passages": ["Vesoul", "Saulx", "Luxeuil-les-Bains", "Fougerolles-Saint-Valbert", "Col du Mont de Fourche", "Raddon-et-Chapendu", "Citers", "Vesoul"]
+    },
+    {
+      "fichier": "mille-etangs",
+      "nom": "Plateau des Mille Étangs",
+      "zone": "Plateau des Mille Étangs",
+      "description": "Par Lure et Faucogney, traversée du plateau des Mille Étangs (Écromagny, Esmoulières), retour par Luxeuil.",
+      "passages": ["Vesoul", "Lure", "Faucogney-et-la-Mer", "Écromagny", "Esmoulières", "Raddon-et-Chapendu", "Saint-Sauveur", "Saulx", "Vesoul"]
+    },
+    {
+      "fichier": "ballon-de-servance",
+      "nom": "Ballon de Servance",
+      "zone": "Ballon de Servance",
+      "description": "Par Lure et Melisey, puis la route du fort jusqu'au sommet du Ballon de Servance (1216 m). Retour par le même chemin. Route du fort à vérifier (parfois fermée en hiver).",
+      "passages": ["Vesoul", "Lure", "Melisey", "Servance-Miellin", "47.83020, 6.79289", "Servance-Miellin", "Melisey", "Lure", "Vesoul"]
+    },
+    {
+      "fichier": "planche-des-belles-filles",
+      "nom": "La Planche des Belles Filles",
+      "zone": "Planche des Belles Filles",
+      "description": "La montée mythique du Tour de France depuis Plancher-les-Mines, aller par Ronchamp et sa chapelle Le Corbusier.",
+      "passages": ["Vesoul", "Lure", "Ronchamp", "Champagney", "Plancher-les-Mines", "47.76719, 6.77354", "Plancher-les-Mines", "Champagney", "Lure", "Vesoul"]
+    },
+    {
+      "fichier": "ballon-d-alsace",
+      "nom": "Ballon d'Alsace",
+      "zone": "Ballon d'Alsace",
+      "description": "Le géant du coin : montée par Giromagny jusqu'au col du Ballon d'Alsace (1171 m). Grosse journée.",
+      "passages": ["Vesoul", "Lure", "Champagney", "Auxelles-Bas", "Giromagny", "Col du Ballon", "Giromagny", "Champagney", "Lure", "Vesoul"]
+    }
+  ]
+}

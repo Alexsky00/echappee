@@ -1,0 +1,6 @@
+# Fichiers fabriqués par le robot (inutile de les envoyer sur GitHub)
+donnees/actus-pro.json
+donnees/actus-materiel.json
+ics/
+parcours/index.json
+__pycache__/

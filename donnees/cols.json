@@ -1,0 +1,22 @@
+{
+  "_aide": "Cols et lieux remarquables. Le robot les repère automatiquement sur chaque parcours qui passe à moins de \"rayon_m\" mètres. type : col ou lieu. alt : altitude en mètres (pour les cols). Pour trouver des coordonnées : sur openstreetmap.org, clic droit sur le lieu puis « Afficher l'adresse ».",
+
+  "rayon_m": { "col": 500, "lieu": 700 },
+
+  "points": [
+    { "nom": "Col du Ballon d'Alsace",          "type": "col",  "alt": 1171, "lat": 47.82087, "lon": 6.83691 },
+    { "nom": "La Planche des Belles Filles",    "type": "col",  "alt": 1148, "lat": 47.76719, "lon": 6.77354 },
+    { "nom": "Ballon de Servance",              "type": "col",  "alt": 1216, "lat": 47.83020, "lon": 6.79289 },
+    { "nom": "Col du Stalon",                   "type": "col",  "alt": 966,  "lat": 47.81854, "lon": 6.81712 },
+    { "nom": "Col des Chevrères",               "type": "col",  "alt": 914,  "lat": 47.78716, "lon": 6.73862 },
+    { "nom": "Col des Croix",                   "type": "col",  "alt": 678,  "lat": 47.85972, "lon": 6.74707 },
+    { "nom": "Col du Mont de Fourche",          "type": "col",  "alt": 621,  "lat": 47.90431, "lon": 6.64564 },
+    { "nom": "Col de la Chevestraye",           "type": "col",  "alt": 612,  "lat": 47.75620, "lon": 6.71607 },
+
+    { "nom": "Chapelle Notre-Dame-du-Haut (Le Corbusier)", "type": "lieu", "lat": 47.70450, "lon": 6.62055 },
+    { "nom": "Thermes de Luxeuil-les-Bains",    "type": "lieu", "lat": 47.82077, "lon": 6.37707 },
+    { "nom": "Lac de Vesoul-Vaivre",            "type": "lieu", "lat": 47.63484, "lon": 6.11525 },
+    { "nom": "Château de Villersexel",          "type": "lieu", "lat": 47.55222, "lon": 6.43017 },
+    { "nom": "Saut de l'Ognon",                 "type": "lieu", "lat": 47.80884, "lon": 6.67667 }
+  ]
+}

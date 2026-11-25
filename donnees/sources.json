@@ -1,0 +1,21 @@
+{
+  "_aide": "Liste des flux RSS. Pour retirer une source sans la supprimer : mettre \"actif\": false. Le champ \"mots_cles\" (facultatif) ne garde que les articles dont le titre contient un de ces mots. Voir MAINTENANCE.md.",
+
+  "pro": [
+    { "nom": "L'Équipe",          "rss": "https://dwh.lequipe.fr/api/edito/rss?path=/Cyclisme/", "actif": true },
+    { "nom": "Vélo 101",          "rss": "https://www.velo101.com/rss",                           "actif": true },
+    { "nom": "Franceinfo",        "rss": "https://www.francetvinfo.fr/sports/cyclisme.rss",       "actif": true },
+    { "nom": "L'Est Républicain", "rss": "https://www.estrepublicain.fr/sport/cyclisme/rss",      "actif": true },
+    { "nom": "Vélo-Club.net",     "rss": "https://www.velo-club.net/feed",                        "actif": true },
+    { "nom": "Cyclingnews (EN)",  "rss": "https://www.cyclingnews.com/feeds.xml",                 "actif": true }
+  ],
+
+  "materiel": [
+    { "nom": "3bikes",            "rss": "https://www.3bikes.fr/feed/",    "actif": true },
+    { "nom": "Bike Café",         "rss": "https://www.bike-cafe.fr/feed/", "actif": true },
+    { "nom": "Le Cycle",          "rss": "https://www.lecycle.fr/feed/",   "actif": true,
+      "mots_cles": ["test", "nouveau", "nouvelle", "dévoile", "lance", "roue", "roues", "vélo", "cadre", "groupe", "transmission", "shimano", "sram", "campagnolo", "capteur", "compteur", "casque", "chaussures", "lunettes", "gants", "pneu", "pneus", "maillot", "cuissard", "équipement"] },
+    { "nom": "road.cc (EN)",      "rss": "https://road.cc/rss",            "actif": true,
+      "mots_cles": ["review", "best", "tested", "wheel", "wheels", "wheelsystem", "groupset", "tyre", "tyres", "power meter", "helmet", "shoes", "jacket", "launch", "new", "first look", "bike computer"] }
+  ]
+}
