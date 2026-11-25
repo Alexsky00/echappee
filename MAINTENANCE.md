@@ -247,8 +247,23 @@ git push                       # publier
 4. Fais défiler et touche **« Sur l'écran d'accueil »**.
 5. Laisse le nom « Échappée », puis touche **Ajouter**.
 
-L'icône jaune à roue apparaît sur l'écran d'accueil. **Ouvre toujours l'app depuis cette icône** :
+L'icône jaune « É » apparaît sur l'écran d'accueil. **Ouvre toujours l'app depuis cette icône** :
 elle s'affiche alors en plein écran, fonctionne hors connexion et garde ses favoris.
+
+### Envoyer un parcours au compteur Bryton Rider 420
+
+À faire une fois : installer l'app gratuite **Bryton Active** (App Store), s'y connecter et
+appairer le Rider 420 en Bluetooth (l'app guide pas à pas).
+
+Ensuite, pour chaque parcours :
+1. Dans Échappée, ouvre le parcours → **📲 Envoyer vers mon GPS** → choisis **Bryton Active**.
+   Si Bryton Active n'est pas dans la liste : **Enregistrer dans Fichiers**, puis ouvre l'app
+   **Fichiers**, touche longuement le fichier `.gpx` → **Partager** → **Bryton Active**.
+2. Dans Bryton Active, le parcours s'ajoute aux itinéraires : lance la synchronisation avec le
+   compteur allumé à côté du téléphone.
+3. Sur le Rider 420 : menu de navigation / itinéraires → choisis le parcours → c'est parti.
+
+> Le Rider 420 ne sait pas inverser un parcours : nos boucles se font dans le sens du fichier.
 
 ### Les rappels de courses (le jour J)
 

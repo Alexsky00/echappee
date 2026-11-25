@@ -212,7 +212,9 @@ export function init(section) {
         <button class="bouton large principal envoyer">📲 Envoyer vers mon GPS</button>
         <a class="bouton large" href="${echapper(lienGPX)}" download="${echapper(p.id)}.gpx">⬇️ Télécharger le fichier GPX</a>
         <p class="discret">« Envoyer » ouvre le menu de partage de l'iPhone : choisissez
-          <b>Garmin Connect</b>, <b>Wahoo</b> ou <b>Enregistrer dans Fichiers</b>.</p>
+          <b>Bryton Active</b>, puis synchronisez le compteur.
+          S'il n'apparaît pas : <b>Enregistrer dans Fichiers</b>, puis dans l'app Fichiers,
+          touchez le fichier → Partager → <b>Bryton Active</b>.</p>
       </div>
 
       ${p.reperes.length ? `<h3 class="sous-titre style-course">Cols et lieux</h3>
