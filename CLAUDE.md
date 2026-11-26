@@ -51,11 +51,16 @@ réponses, docs).
 - Émulation iPhone XR par Chrome CDP (script `test-iphone.mjs` dans le scratchpad de session).
 - Le robot en local : `pip install feedparser pillow` puis `python outils/robot.py`.
 
+## Mise à jour horaire (réglé le 26/11/2026)
+- Le cron GitHub `17 * * * *` est peu fiable (1 seul passage la nuit du 25 au 26/11). Il reste en place.
+- Réveil externe **cron-job.org** (compte de l'utilisateur, tâche « Échappée », toutes les heures) :
+  POST `https://api.github.com/repos/Alexsky00/echappee/actions/workflows/publier.yml/dispatches`,
+  en-têtes `Authorization: Bearer <jeton>`, `Accept: application/vnd.github+json`, `User-Agent`,
+  corps `{"ref":"main"}`. Jeton fin `reveil-echappee` (Actions R/W, dépôt echappee seul).
+  Vérifié : passages `workflow_dispatch` réussis. Le jeton expire : procédure de renouvellement
+  dans `MAINTENANCE.md` (« Le réveil horaire »). Ne jamais demander le jeton dans la conversation.
+
 ## À suivre / non vérifié
-- **Cron horaire** : peu fiable. Entre le 25/11 22 h UTC et le 26/11 9 h 30 UTC, GitHub n'a lancé
-  qu'UN passage programmé (26/11 02 h 16 UTC). Solution proposée : déclencheur externe gratuit
-  (cron-job.org → POST `actions/workflows/publier.yml/dispatches` avec jeton GitHub fin,
-  droit Actions lecture/écriture sur le seul dépôt). En attente de l'accord de l'utilisateur.
 - Pas encore testé sur le vrai iPhone : installation (l'utilisateur n'arrivait pas à « Sur
   l'écran d'accueil » — probablement lien ouvert hors de Safari), Web Share → Bryton Active,
   `.ics` en mode installé, encoche, hors connexion.

@@ -25,6 +25,18 @@ Tout se fait depuis le site **github.com**, dans le navigateur : pas besoin d'in
 
 Le robot tourne aussi **toutes les heures** pour rafraîchir les actualités. Tu n'as rien à faire.
 
+### Le réveil horaire (cron-job.org)
+Le passage horaire de GitHub n'est pas fiable (une seule fois dans la nuit du 25 au 26/11/2026).
+Depuis le 26/11/2026, le service gratuit **cron-job.org** (tâche « Échappée ») demande à GitHub
+de lancer le robot toutes les heures. Dans l'onglet **Actions**, ces passages apparaissent
+comme « Manually run by Alexsky00 ».
+- Il utilise une clé GitHub `reveil-echappee` (droit « Actions : Read and write » sur le seul
+  dépôt echappee) créée sur https://github.com/settings/personal-access-tokens.
+- **Quand la clé expire** (GitHub prévient par e-mail) : sur cette page, ouvre `reveil-echappee`
+  → **Regenerate token**, copie la nouvelle clé, puis sur cron-job.org modifie la tâche →
+  onglet Advanced → en-tête `Authorization` : `Bearer ` + la nouvelle clé.
+- Si cron-job.org affiche une erreur **401** : clé expirée ou mal collée (voir ci-dessus).
+
 **Si tu fais une erreur** (une virgule oubliée par exemple), le robot refuse de publier.
 L'ancienne version reste en ligne, rien n'est cassé, et GitHub t'envoie un e-mail.
 Le message d'erreur (en français) explique quoi corriger : voir « [En cas de problème](#en-cas-de-problème) ».
@@ -321,7 +333,8 @@ Ferme-la complètement et rouvre-la. Si ça ne suffit pas : supprime l'icône
 (appui long → Supprimer l'app) et réinstalle-la depuis Safari (étape 5). Les favoris seront perdus.
 
 **Les actus ne bougent plus.**
-Onglet **Actions** : le robot tourne-t-il toutes les heures ? Un site a peut-être changé l'adresse de son flux :
+Onglet **Actions** : le robot tourne-t-il toutes les heures ? Sinon, regarde l'historique de la
+tâche sur cron-job.org (clé expirée ? voir « Le réveil horaire »). Un site a peut-être changé l'adresse de son flux :
 teste chaque adresse `rss` dans un navigateur.
 
 **Un parcours « illisible ».**
